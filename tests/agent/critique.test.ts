@@ -100,6 +100,24 @@ vi.mock("@/agent/llm", () => {
   };
 });
 
+// The research node calls the Day-3 tools — stub them so the graph test stays
+// hermetic; the mocked LLM supplies research's output regardless.
+vi.mock("@/agent/tools/webSearch", () => ({
+  MAX_WEB_SEARCHES_PER_RUN: 5,
+  webSearch: vi.fn(async () => []),
+}));
+vi.mock("@/agent/tools/cloudinaryMetadata", () => ({
+  cloudinaryMetadata: vi.fn(async () => ({
+    imageId: "mock",
+    tags: [],
+    capturedAt: null,
+    dimensions: { width: 0, height: 0 },
+  })),
+}));
+vi.mock("@/agent/tools/existingWanderlearnCourses", () => ({
+  existingWanderlearnCourses: vi.fn(async () => []),
+}));
+
 import { buildFieldReportGraph, MAX_REVISIONS } from "@/agent/graph";
 import { RUBRIC_CRITERIA } from "@/agent/rubric";
 import type { FieldReportState } from "@/agent/state";

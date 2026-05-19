@@ -52,6 +52,16 @@ export const FieldReportStateAnnotation = Annotation.Root({
     reducer: (current, update) => current || update,
     default: () => false,
   }),
+
+  /**
+   * Number of `webSearch` calls made so far this run. The research node reads
+   * this before each search and never exceeds `MAX_WEB_SEARCHES_PER_RUN` — the
+   * node-level guard for the PRD's webSearch cap.
+   */
+  webSearchCallCount: Annotation<number>({
+    reducer: (current, update) => current + update,
+    default: () => 0,
+  }),
 });
 
 /** The fully-typed state object every node receives (PRD §6). */
