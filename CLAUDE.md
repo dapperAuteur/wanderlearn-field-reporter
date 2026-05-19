@@ -105,6 +105,11 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
   `requireApiUser`) live in `src/lib/auth/dal.ts` — proxy alone is never the
   boundary. Only `ADMIN_EMAIL` may sign in; the link is sent via the Mailgun
   HTTP API; the session is a jose-signed JWT cookie.
+- **The sign-in form doubles as a waitlist.** Non-admin emails are denied
+  access and offered the `waitlist_signups` table (`src/lib/waitlist.ts`,
+  migration `0003`) — capturing early interest for when this becomes a paid
+  product. The denied state is intentional; the previous account-enumeration
+  screen was theater (the admin address is public on the portfolio).
 - **Build plan:** the PRD is `plans/PRD-3-wanderlearn-field-reporter.md`; the
   approved Day-1 plan is `~/.claude/plans/add-plans-dir-to-elegant-cascade.md`.
 

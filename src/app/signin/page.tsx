@@ -36,8 +36,9 @@ export default async function SignInPage({
         Sign in to Field Reporter
       </h1>
       <p className="mt-2 mb-6 text-sm leading-relaxed text-muted-foreground">
-        The operator console is private. Enter your email and we&apos;ll send a
-        one-time sign-in link — no password.
+        This app is private — only the administrator can sign in. Enter your
+        email; we&apos;ll either send a one-time sign-in link, or invite you to
+        the waitlist for when this becomes available.
       </p>
       <SignInForm errorMessage={errorMessage} />
     </main>
