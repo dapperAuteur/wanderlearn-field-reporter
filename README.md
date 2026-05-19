@@ -58,7 +58,7 @@ npm run dev
 | `npm run lint` | ESLint |
 | `npm test` | Vitest run |
 | `npm run db:generate` | Generate the Drizzle migration from `src/db/schema.ts` |
-| `npm run db:migrate` | Apply migrations (needs `DATABASE_URL`) |
+| `npm run db:migrate` | Apply migrations (needs `STORAGE_DATABASE_URL`) |
 
 ## Project layout
 
