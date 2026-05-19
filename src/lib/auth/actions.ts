@@ -1,24 +1,36 @@
 "use server";
 
 /**
- * Server Actions for the sign-in flow.
+ * Server Actions for the sign-in / waitlist flow.
  *
- * `requestLoginLink` is intentionally constant-time in its reply: it returns
- * the same `sent` state whether or not the submitted address is the admin, so
- * the form never reveals which email can sign in. Only `ADMIN_EMAIL` actually
- * gets a link.
+ * The sign-in form is dual-purpose: the admin email gets a magic link; any
+ * other address is told the app is private and offered the waitlist. That
+ * deliberately drops the previous account-enumeration screen — the admin
+ * address is published on the portfolio anyway, so the screen was theater, and
+ * a useful denied-state matters more than the pretense.
  */
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getEnv } from "@/lib/env";
+import { addToWaitlist } from "@/lib/waitlist";
 import { endSession } from "./dal";
 import { sendLoginLink } from "./mailer";
 import { issueLoginToken } from "./tokens";
 
-export type RequestLinkState = {
-  status: "idle" | "sent" | "error";
-  message?: string;
-};
+/**
+ * Discriminated union — drives the form's render branches and carries the
+ * submitted email forward into the denied → waitlist step.
+ */
+export type RequestLinkState =
+  | { status: "idle" }
+  | { status: "link-sent" }
+  | { status: "denied"; email: string }
+  | { status: "error"; message: string };
+
+export type WaitlistState =
+  | { status: "idle" }
+  | { status: "waitlisted" }
+  | { status: "error"; message: string };
 
 async function currentOrigin(): Promise<string> {
   const h = await headers();
@@ -28,29 +40,61 @@ async function currentOrigin(): Promise<string> {
   return `${proto}://${host}`;
 }
 
-/** Email a magic link — but only to the configured admin address. */
+function normalizeEmail(formData: FormData): string {
+  return String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * Submit an email from the sign-in form. The admin address gets a magic link;
+ * every other address gets a `denied` reply that the form turns into the
+ * waitlist prompt.
+ */
 export async function requestLoginLink(
   _prev: RequestLinkState,
   formData: FormData,
 ): Promise<RequestLinkState> {
-  const email = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
-  const admin = getEnv().ADMIN_EMAIL?.trim().toLowerCase();
-
-  if (admin && email === admin) {
-    try {
-      const token = await issueLoginToken(email);
-      const origin = await currentOrigin();
-      await sendLoginLink(email, `${origin}/api/auth/verify?token=${token}`);
-    } catch (err) {
-      console.error("[auth] failed to send login link:", err);
-      return { status: "error", message: "Could not send the link — try again." };
-    }
+  const email = normalizeEmail(formData);
+  if (!email) {
+    return { status: "error", message: "Enter an email address." };
   }
 
-  // Same reply for any address — no account enumeration.
-  return { status: "sent" };
+  const admin = getEnv().ADMIN_EMAIL?.trim().toLowerCase();
+  if (!admin || email !== admin) {
+    return { status: "denied", email };
+  }
+
+  try {
+    const token = await issueLoginToken(email);
+    const origin = await currentOrigin();
+    await sendLoginLink(email, `${origin}/api/auth/verify?token=${token}`);
+    return { status: "link-sent" };
+  } catch (err) {
+    console.error("[auth] failed to send login link:", err);
+    return { status: "error", message: "Could not send the link — try again." };
+  }
+}
+
+/**
+ * Add the submitted email to the waitlist. Invoked from the denied branch of
+ * the sign-in form, so the email rides in via a hidden input.
+ */
+export async function joinWaitlist(
+  _prev: WaitlistState,
+  formData: FormData,
+): Promise<WaitlistState> {
+  const email = normalizeEmail(formData);
+  if (!email) {
+    return { status: "error", message: "We lost your email — start over." };
+  }
+  try {
+    await addToWaitlist(email);
+    return { status: "waitlisted" };
+  } catch (err) {
+    console.error("[waitlist] failed to add signup:", err);
+    return { status: "error", message: "Could not add you — try again." };
+  }
 }
 
 /** Clear the session and return to the sign-in screen. */

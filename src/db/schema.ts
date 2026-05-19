@@ -80,6 +80,21 @@ export const loginTokens = pgTable("login_tokens", {
     .defaultNow(),
 });
 
+/**
+ * One row per address that asked to be notified when the agent becomes a paid
+ * product. Captured from the sign-in screen when a non-admin tries to sign in:
+ * the form denies access and offers to add them to this list instead. The
+ * unique constraint on `email` makes repeat submissions a no-op.
+ */
+export const waitlistSignups = pgTable("waitlist_signups", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull().unique(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export type FieldReport = typeof fieldReports.$inferSelect;
 export type FieldReportRevision = typeof fieldReportRevisions.$inferSelect;
 export type LoginToken = typeof loginTokens.$inferSelect;
+export type WaitlistSignup = typeof waitlistSignups.$inferSelect;
