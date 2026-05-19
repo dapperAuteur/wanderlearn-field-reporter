@@ -1,0 +1,13 @@
+{
+  "name": "Wanderlearn Field Reporter",
+  "short_name": "Field Reporter",
+  "description": "A LangGraph agent that drafts publishable lessons from Wanderlearn field captures.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0284c7",
+  "icons": [
+    { "src": "/brand/witus/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/brand/witus/favicon-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
