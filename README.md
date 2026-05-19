@@ -4,35 +4,38 @@ A [LangGraph](https://langchain-ai.github.io/langgraphjs/) agent that turns a ra
 Wanderlearn capture — a location transcript, GPS, and photo references — into a
 publishable lesson draft. The agent researches the location, drafts an
 objectives-first outline, writes a cited lesson, then **self-critiques against a
-rubric and revises** until the draft passes or hits a maximum revision count.
+rubric and revises** until the draft passes or hits a revision cap.
 
 Part of the WitUS ecosystem; a sibling of
 [Wanderlearn](https://wanderlearn.witus.online).
 
 **Live:** <https://wanderlearn.field.reporter.witus.online>
 
-## Status — Day 7 — shipped
-
-**The full agent, operator UI, and curriculum — built, deployed, documented.**
-The agent runs the full self-critique cycle:
+## The agent
 
 ```
-research → outline → write → critique → (pass → image prompts | fail → revise | give up → human review)
+research → outline → write → critique → ┬ pass     → image prompts
+                       ▲                ├ fail     → revise (loop)
+                       └────────────────┘ give up  → human review
 ```
 
-`critique` scores the draft against the rubric in `src/agent/rubric.ts`. On a
-failing score the graph loops back to `write` to revise; after `MAX_REVISIONS`
-(3) failed attempts it routes to human review instead of looping forever.
+`critique` scores the draft against the rubric in
+[`src/agent/rubric.ts`](src/agent/rubric.ts) — the single source of truth for
+lesson quality. A failing score loops back to `write`; after `MAX_REVISIONS` (3)
+failed attempts the graph routes to human review instead of looping forever.
 
-The `research` node gathers material from three tools — Tavily web search
-(capped at 5 calls per run by a node-level guard), Cloudinary photo metadata,
-and the Wanderlearn course catalog — before the LLM synthesizes the facts.
+`research` gathers material from three tools — Tavily web search (capped at 5
+calls per run by a node-level guard), Cloudinary photo metadata, and the
+Wanderlearn course catalog — before the LLM synthesizes the facts.
 
-The operator console lives at `/field-report`: submit a capture at
-`/field-report/new`, then scrub a report's revision history in the side-by-side
-viewer at `/field-report/:id`. Each run picks its LLM provider — Claude Sonnet
-4.6 or Gemini 2.5 Flash — so draft quality can be compared. Full plan:
-[`plans/PRD-3-wanderlearn-field-reporter.md`](plans/PRD-3-wanderlearn-field-reporter.md).
+Each run picks its LLM provider — Claude Sonnet 4.6 or Gemini 2.5 Flash — so
+draft quality can be compared side by side.
+
+## Operator console
+
+`/field-report` lists every report. Submit a capture at `/field-report/new`,
+then scrub a report's revision history in the side-by-side viewer at
+`/field-report/:id` to see how each critique cycle changed the draft.
 
 ## Stack
 
@@ -43,23 +46,15 @@ Drizzle ORM + Neon Postgres · LangSmith · Vitest · Node 20+.
 ## Quick start
 
 ```sh
-# 1. Use Node 20+ (see .nvmrc)
-nvm use
-
-# 2. Install dependencies
+nvm use                          # Node 20+ (see .nvmrc)
 npm install
-
-# 3. Configure environment
-cp .env.example .env.local
-#    Fill in the values — .env.example documents where to get each key.
-#    The agent needs ANTHROPIC_API_KEY; the rest are optional on Day 1.
-
-# 4. Run the test suite (offline — the Day-1 test mocks the LLM)
-npm test
-
-# 5. Start the dev server
+cp .env.example .env.local       # fill in keys — .env.example documents each one
+npm test                         # offline; the suite mocks the LLM
 npm run dev
 ```
+
+The agent needs `ANTHROPIC_API_KEY` (or `GOOGLE_API_KEY`); every other key is
+optional and its tool fails soft when absent.
 
 ## Scripts
 
@@ -81,17 +76,15 @@ src/
     rubric.ts     single source of truth for lesson quality (PRD §7)
     schemas.ts    Zod schemas + derived types for the agent state
     state.ts      LangGraph state (Annotation.Root)
-    llm.ts        Claude Sonnet 4.6 model factory
+    llm.ts        Claude / Gemini model factory
     graph.ts      the agent graph; exports MAX_REVISIONS (default 3)
     nodes/        research · outline · write · critique ·
                   generateImagePrompts · flagForHumanReview
+    tools/        webSearch · cloudinaryMetadata · existingWanderlearnCourses
   db/schema.ts    Drizzle schema — field_reports, field_report_revisions
-  lib/env.ts      lenient, validated environment access
-  app/            Next.js app router
-  components/     ecosystem site footer + shadcn/ui
-tests/
-  agent/critique.test.ts   Day-1 end-to-end graph wiring test
-  fixtures/                placeholder MUCHO Museo del Chocolate capture
+  lib/            env access, report queries, LangSmith + Cloudinary helpers
+  app/            Next.js app router — operator console + API routes
+tests/            Vitest suites; the LLM is mocked, so the suite runs offline
 ```
 
 ## Curriculum
@@ -106,8 +99,8 @@ taught on a different sample domain so the patterns transfer:
 
 ## Environment
 
-Every variable is documented in [`.env.example`](.env.example). LangSmith tracing
-is on by default; the app runs fine without `LANGSMITH_API_KEY`.
+Every variable is documented in [`.env.example`](.env.example). LangSmith
+tracing is on by default; the app runs fine without `LANGSMITH_API_KEY`.
 
 ## License
 
