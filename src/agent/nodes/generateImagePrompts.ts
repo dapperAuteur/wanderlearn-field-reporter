@@ -25,10 +25,10 @@ export async function generateImagePrompts(
   }
 
   try {
-    const model = getChatModel({ temperature: 0.7 }).withStructuredOutput(
-      ImagePromptsSchema,
-      { name: "generate_image_prompts" },
-    );
+    const model = getChatModel({
+      provider: state.llmProvider,
+      temperature: 0.7,
+    }).withStructuredOutput(ImagePromptsSchema, { name: "generate_image_prompts" });
     const { prompts } = await model.invoke([
       ["system", SYSTEM_PROMPT],
       ["human", `Lesson:\n\n${draft.markdown}`],

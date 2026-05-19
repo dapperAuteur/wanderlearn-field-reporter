@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFieldReport } from "@/lib/reports";
 import { getLangsmithRunUrl } from "@/lib/langsmith";
+import { LLM_PROVIDER_LABELS } from "@/agent/schemas";
 import { RevisionViewer } from "../components/RevisionViewer";
 
 export const dynamic = "force-dynamic";
@@ -56,7 +57,8 @@ export default async function FieldReportDetailPage({
       <p className="mt-1 font-mono text-xs text-slate-500">{report.id}</p>
       <p className="mt-1 text-sm text-slate-500">
         {revisions.length} revision{revisions.length === 1 ? "" : "s"} ·
-        audience: {report.targetAudience}
+        audience: {report.targetAudience} · generated with{" "}
+        {LLM_PROVIDER_LABELS[report.llmProvider]}
       </p>
       {langsmithUrl && (
         <a

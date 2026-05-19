@@ -1,0 +1,1 @@
+ALTER TABLE "field_reports" ADD COLUMN "llm_provider" text DEFAULT 'anthropic' NOT NULL;

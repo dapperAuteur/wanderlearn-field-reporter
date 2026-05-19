@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { getCompiledFieldReportGraph } from "@/agent/graph";
+import { resolveProvider } from "@/agent/llm";
 import {
   LocationSchema,
   RawInputSchema,
   TargetAudienceSchema,
+  LlmProviderSchema,
 } from "@/agent/schemas";
 import type { FieldReportState } from "@/agent/state";
 import { saveFieldReport } from "@/lib/reports";
@@ -19,6 +21,8 @@ const GenerateInputSchema = z.object({
   location: LocationSchema,
   rawInput: RawInputSchema,
   targetAudience: TargetAudienceSchema,
+  /** Optional — defaults to whichever provider key is configured. */
+  llmProvider: LlmProviderSchema.optional(),
 });
 
 /**
@@ -26,7 +30,9 @@ const GenerateInputSchema = z.object({
  * report and its revision history, and returns the new report id.
  *
  * Synchronous: the request blocks for the full agent run (PRD §4 — minutes,
- * not seconds). A durable queue would replace this at production scale.
+ * not seconds). The chosen provider rides in the graph state; a fresh
+ * `langsmithRunId` is passed as the run's id so its LangSmith trace is
+ * addressable. A durable queue would replace this at production scale.
  */
 export async function POST(request: Request): Promise<NextResponse> {
   let json: unknown;
@@ -48,16 +54,23 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   const reportId = randomUUID();
+  const langsmithRunId = randomUUID();
+  const llmProvider = resolveProvider(parsed.data.llmProvider);
+
   try {
     const graph = getCompiledFieldReportGraph();
-    const result = (await graph.invoke({
-      reportId,
-      location: parsed.data.location,
-      rawInput: parsed.data.rawInput,
-      targetAudience: parsed.data.targetAudience,
-    })) as FieldReportState;
+    const result = (await graph.invoke(
+      {
+        reportId,
+        location: parsed.data.location,
+        rawInput: parsed.data.rawInput,
+        targetAudience: parsed.data.targetAudience,
+        llmProvider,
+      },
+      { runId: langsmithRunId },
+    )) as FieldReportState;
 
-    await saveFieldReport(reportId, result);
+    await saveFieldReport(reportId, result, langsmithRunId);
     return NextResponse.json({ ok: true, reportId }, { status: 201 });
   } catch (err) {
     console.error("[generate] agent run failed:", err);

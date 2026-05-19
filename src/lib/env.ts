@@ -12,8 +12,10 @@ import { z } from "zod";
  * Values that ARE present are still format-checked.
  */
 const EnvSchema = z.object({
-  /** Anthropic API key — Claude Sonnet 4.6, the agent's LLM (PRD §5). */
+  /** Anthropic API key — Claude Sonnet 4.6 (PRD §5). */
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  /** Google Gemini API key — Gemini 2.5 Pro, the alternate provider (PRD App. A). */
+  GEMINI_API_KEY: z.string().min(1).optional(),
   /** Tavily key for the `webSearch` tool (wired Day 3). */
   TAVILY_API_KEY: z.string().min(1).optional(),
   /** LangSmith tracing — optional; the LangChain SDK no-ops without a key. */

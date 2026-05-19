@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listFieldReports } from "@/lib/reports";
+import { LLM_PROVIDER_LABELS } from "@/agent/schemas";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,7 +49,8 @@ export default async function FieldReportListPage() {
                     {report.locationName}
                   </p>
                   <p className="text-xs text-slate-500">
-                    {report.createdAt.toLocaleString()}
+                    {report.createdAt.toLocaleString()} ·{" "}
+                    {LLM_PROVIDER_LABELS[report.llmProvider]}
                   </p>
                 </div>
                 <span

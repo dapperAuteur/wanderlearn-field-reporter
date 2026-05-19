@@ -37,10 +37,10 @@ export async function outline(
   ].join("\n");
 
   try {
-    const model = getChatModel({ temperature: 0.4 }).withStructuredOutput(
-      OutlineSchema,
-      { name: "draft_outline" },
-    );
+    const model = getChatModel({
+      provider: state.llmProvider,
+      temperature: 0.4,
+    }).withStructuredOutput(OutlineSchema, { name: "draft_outline" });
     const outline = await model.invoke([
       ["system", SYSTEM_PROMPT],
       ["human", userMessage],

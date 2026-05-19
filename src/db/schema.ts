@@ -16,7 +16,7 @@ import {
   integer,
   boolean,
 } from "drizzle-orm/pg-core";
-import type { RubricScores } from "../agent/schemas";
+import type { RubricScores, LlmProvider } from "../agent/schemas";
 
 /** One row per capture submitted to the agent. */
 export const fieldReports = pgTable("field_reports", {
@@ -28,6 +28,10 @@ export const fieldReports = pgTable("field_reports", {
   rawTranscript: text("raw_transcript").notNull(),
   rawImageRefs: text("raw_image_refs").array().notNull(),
   targetAudience: text("target_audience").notNull(),
+  llmProvider: text("llm_provider")
+    .$type<LlmProvider>()
+    .notNull()
+    .default("anthropic"),
   finalMarkdown: text("final_markdown"),
   imagePrompts: jsonb("image_prompts").$type<string[]>(),
   flaggedForHumanReview: boolean("flagged_for_human_review")

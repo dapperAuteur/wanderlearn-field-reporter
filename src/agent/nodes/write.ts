@@ -61,6 +61,7 @@ export async function write(
 
   try {
     const model = getChatModel({
+      provider: state.llmProvider,
       temperature: 0.5,
       maxTokens: 8192,
     }).withStructuredOutput(WriteOutputSchema, { name: "write_lesson" });
