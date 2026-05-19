@@ -20,8 +20,10 @@ const EnvSchema = z.object({
   LANGSMITH_API_KEY: z.string().min(1).optional(),
   LANGSMITH_PROJECT: z.string().min(1).optional(),
   LANGSMITH_TRACING: z.string().optional(),
-  /** Neon Postgres connection string — used by the app and by drizzle-kit. */
-  DATABASE_URL: z.string().url().optional(),
+  /** Neon Postgres — pooled connection, used by the app at runtime. */
+  STORAGE_DATABASE_URL: z.string().url().optional(),
+  /** Neon Postgres — direct/unpooled connection, used by drizzle-kit migrations. */
+  STORAGE_DATABASE_URL_UNPOOLED: z.string().url().optional(),
   /** Existing Wanderlearn Cloudinary tenant (`cloudinaryMetadata` tool, Day 3). */
   CLOUDINARY_URL: z.string().min(1).optional(),
 });
