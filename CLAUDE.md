@@ -101,11 +101,11 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
 ### Day status
 
 - **Day 1:** scaffold + linear graph skeleton with a stub critique. Done.
-- **Day 2 (current):** real critique node + cyclic write→critique edge +
-  `MAX_REVISIONS` termination + `tests/agent/termination.test.ts`. Done.
-- **Day 3:** `webSearch` (Tavily) and `cloudinaryMetadata` tools.
-  `@langchain/community` was deferred from Day 1 — installing it alongside
-  `@langchain/core` 1.x triggers an `ERESOLVE` peer conflict (it drags in the
-  `langchain` meta-package + `@getzep/zep-cloud` with old `@langchain/core`
-  ranges). When wiring Tavily, install `@langchain/tavily` (the current home of
-  the Tavily tool) or `@langchain/community` with `--legacy-peer-deps`.
+- **Day 2:** real critique node + cyclic write→critique edge + `MAX_REVISIONS`
+  termination + `tests/agent/termination.test.ts`. Done.
+- **Day 3 (current):** the `webSearch`, `cloudinaryMetadata`, and
+  `existingWanderlearnCourses` tools, wired into the research node. Done.
+  `webSearch` calls the Tavily REST API directly — no `@langchain/community`
+  (its 1.x release has an `ERESOLVE` peer conflict with `@langchain/core` 1.x)
+  and no SDK. The ≤5-calls-per-run cap is a node-level guard in `research`.
+- **Day 4:** the operator UI — the side-by-side revision viewer.

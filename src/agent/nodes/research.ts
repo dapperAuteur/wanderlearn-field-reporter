@@ -1,32 +1,68 @@
 /**
  * `research` node — the first node in the graph.
  *
- * Day 1: extracts factual claims and plausible Wanderlearn cross-links FROM THE
- * TRANSCRIPT ALONE, via one structured-output call. The `webSearch` tool
- * (Tavily) is wired Day 3 — at which point this node gains a node-level guard
- * capping webSearch at 5 calls per run: a `webSearchCallCount` state channel
- * checked before each call, never a prompt instruction.
+ * Gathers raw material for the lesson, then has the LLM synthesize it into
+ * `research` (facts + Wanderlearn cross-links):
+ *   - `webSearch` (Tavily) — facts about the location beyond the transcript;
+ *   - `cloudinaryMetadata` — what the captured photos contain;
+ *   - `existingWanderlearnCourses` — real courses to cross-link.
  *
- * Pure and fail-soft: any error becomes empty research, so the graph never
- * hard-crashes on a bad input.
+ * The webSearch cap is enforced HERE, as a node-level guard: research counts
+ * its calls against `state.webSearchCallCount` and never exceeds
+ * `MAX_WEB_SEARCHES_PER_RUN`. This is deliberately not a prompt instruction.
+ *
+ * Pure and fail-soft: each tool degrades to empty on error, and a failed LLM
+ * call yields empty research — the graph never hard-crashes on a bad input.
  */
 import { ResearchSchema } from "../schemas";
 import { getChatModel } from "../llm";
+import {
+  webSearch,
+  MAX_WEB_SEARCHES_PER_RUN,
+  type WebSearchResult,
+} from "../tools/webSearch";
+import { cloudinaryMetadata } from "../tools/cloudinaryMetadata";
+import { existingWanderlearnCourses } from "../tools/existingWanderlearnCourses";
 import type { FieldReportState, FieldReportStateUpdate } from "../state";
 
 const SYSTEM_PROMPT = `You are a location researcher for Wanderlearn, which builds \
-place-anchored lessons from field captures. Given a capture transcript and its \
-location, extract the factual claims a lesson could be built on, and name any \
-existing Wanderlearn courses worth cross-linking.
+place-anchored lessons from field captures. Synthesize the capture transcript, web \
+search results, photo metadata, and the existing Wanderlearn course list into:
+- "facts": the factual claims a lesson could be built on, each with a named source
+  (cite the transcript, a web result's title, or a photo's tags — whichever
+  supports it);
+- "relatedCourses": slugs of existing Wanderlearn courses worth cross-linking.
 
-Return only claims the transcript actually supports. Name each claim's source as \
-specifically as the transcript allows (e.g. "museum placard", "operator narration"). \
-Day 1 has no web search — do not invent facts beyond the transcript.`;
+Use only claims the provided material supports. Do not invent sources.`;
 
 export async function research(
   state: FieldReportState,
 ): Promise<FieldReportStateUpdate> {
   const { location, rawInput, targetAudience } = state;
+
+  // --- webSearch, bounded by the node-level per-run cap --------------------
+  const searchQueries = [
+    `${location.name} history and significance`,
+    `${location.name} visitor facts and background`,
+  ];
+  const priorSearches = state.webSearchCallCount;
+  const webResults: WebSearchResult[] = [];
+  let searchesMade = 0;
+  for (const query of searchQueries) {
+    if (priorSearches + searchesMade >= MAX_WEB_SEARCHES_PER_RUN) {
+      break; // node-level guard — never exceed the per-run webSearch cap
+    }
+    webResults.push(...(await webSearch({ query })));
+    searchesMade += 1;
+  }
+
+  // --- photo metadata + cross-link candidates ------------------------------
+  const imageMetadata = await Promise.all(
+    rawInput.imageRefs.map((imageId) => cloudinaryMetadata({ imageId })),
+  );
+  const relatedCourses = await existingWanderlearnCourses({
+    topic: location.name,
+  });
 
   const userMessage = [
     `Location: ${location.name} (${location.gps.lat}, ${location.gps.lng})`,
@@ -38,6 +74,15 @@ export async function research(
     ...(rawInput.operatorNotes
       ? ["", `Operator notes: ${rawInput.operatorNotes}`]
       : []),
+    "",
+    "Web search results:",
+    JSON.stringify(webResults, null, 2),
+    "",
+    "Photo metadata:",
+    JSON.stringify(imageMetadata, null, 2),
+    "",
+    "Existing Wanderlearn courses (cross-link candidates):",
+    JSON.stringify(relatedCourses, null, 2),
   ].join("\n");
 
   try {
@@ -49,9 +94,12 @@ export async function research(
       ["system", SYSTEM_PROMPT],
       ["human", userMessage],
     ]);
-    return { research };
+    return { research, webSearchCallCount: searchesMade };
   } catch (err) {
     console.error("[research] failed; returning empty research:", err);
-    return { research: { facts: [], relatedCourses: [] } };
+    return {
+      research: { facts: [], relatedCourses: [] },
+      webSearchCallCount: searchesMade,
+    };
   }
 }

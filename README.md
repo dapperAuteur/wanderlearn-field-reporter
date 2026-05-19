@@ -9,9 +9,9 @@ rubric and revises** until the draft passes or hits a maximum revision count.
 Part of the WitUS ecosystem; a sibling of
 [Wanderlearn](https://wanderlearn.witus.online).
 
-## Status — Day 2
+## Status — Day 3
 
-**Reflection loop.** The agent runs the full self-critique cycle:
+**Reflection loop + research tools.** The agent runs the full self-critique cycle:
 
 ```
 research → outline → write → critique → (pass → image prompts | fail → revise | give up → human review)
@@ -19,7 +19,11 @@ research → outline → write → critique → (pass → image prompts | fail �
 
 `critique` scores the draft against the rubric in `src/agent/rubric.ts`. On a
 failing score the graph loops back to `write` to revise; after `MAX_REVISIONS`
-(3) failed attempts it routes to human review instead of looping forever. The
+(3) failed attempts it routes to human review instead of looping forever.
+
+The `research` node gathers material from three tools — Tavily web search
+(capped at 5 calls per run by a node-level guard), Cloudinary photo metadata,
+and the Wanderlearn course catalog — before the LLM synthesizes the facts. The
 operator UI lands on Day 4. Full plan:
 [`plans/PRD-3-wanderlearn-field-reporter.md`](plans/PRD-3-wanderlearn-field-reporter.md).
 
