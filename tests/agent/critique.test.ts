@@ -1,19 +1,27 @@
 /**
- * Day 1 — graph wiring test.
+ * End-to-end happy path.
  *
- * Proves the linear pipeline runs end to end:
- *   research → outline → write → critique(stub) → generate_image_prompts → END
+ * When the critique passes on the first try, the graph runs straight through:
+ *   research → outline → write → critique → generate_image_prompts → END
  *
- * The four LLM nodes are mocked via the model factory (`@/agent/llm`), so this
- * test is offline, deterministic, free, and green in CI without an API key. The
- * stub critique makes no LLM call. Day 2 adds the real critique node, the cyclic
- * write→critique edge, and a separate termination test.
+ * All five LLM nodes are mocked via the model factory (`@/agent/llm`), keyed by
+ * each node's structured-output tool name — so the test is offline,
+ * deterministic, and green in CI without an API key. The revise / escalate
+ * branches of the reflection loop are covered in `termination.test.ts`.
  */
 import { describe, it, expect, vi } from "vitest";
 
 vi.mock("@/agent/llm", () => {
-  // Canned structured-output values, keyed by each node's `withStructuredOutput`
-  // tool name. Declared INSIDE the factory — vitest hoists vi.mock above imports.
+  const passingRubricScores = {
+    has_clear_objectives: { pass: true, evidence: "Mock: objectives listed." },
+    sections_tie_to_objectives: { pass: true, evidence: "Mock: sections tie in." },
+    has_three_citations: { pass: true, evidence: "Mock: three sources cited." },
+    has_hands_on_exercise: { pass: true, evidence: "Mock: exercise present." },
+    reading_level_matches_audience: { pass: true, evidence: "Mock: level fits." },
+    has_next_capture_appendix: { pass: true, evidence: "Mock: appendix present." },
+  };
+
+  // Canned structured output, keyed by each node's withStructuredOutput name.
   const cannedByName: Record<string, unknown> = {
     extract_research: {
       facts: [
@@ -68,12 +76,10 @@ vi.mock("@/agent/llm", () => {
           claim: "MUCHO occupies a historic mansion.",
           source: "operator narration",
         },
-        {
-          claim: "Demonstrations run daily.",
-          source: "operator narration",
-        },
+        { claim: "Demonstrations run daily.", source: "operator narration" },
       ],
     },
+    score_rubric: passingRubricScores,
     generate_image_prompts: {
       prompts: [
         "A sunlit colonial courtyard with cacao pods arranged on a stone metate.",
@@ -104,12 +110,12 @@ type CaptureInput = Pick<
   "reportId" | "location" | "rawInput" | "targetAudience"
 >;
 
-describe("field-report graph — Day 1 linear pipeline", () => {
+describe("field-report graph — end-to-end happy path", () => {
   it("exports MAX_REVISIONS = 3", () => {
     expect(MAX_REVISIONS).toBe(3);
   });
 
-  it("runs research → outline → write → critique(stub) → images → END", async () => {
+  it("runs research → outline → write → critique → images → END when the rubric passes", async () => {
     const graph = buildFieldReportGraph();
     const result = (await graph.invoke(
       muchoCapture as CaptureInput,
@@ -125,7 +131,7 @@ describe("field-report graph — Day 1 linear pipeline", () => {
     expect(result.draft?.revisionNumber).toBe(1);
     expect(result.draft?.markdown).toContain("#");
 
-    // the stub critique passed and recorded exactly one revision
+    // the critique passed first try and recorded exactly one revision
     expect(result.critique?.passed).toBe(true);
     expect(result.revisionHistory).toHaveLength(1);
     expect(Object.keys(result.critique?.rubricScores ?? {}).sort()).toEqual(
