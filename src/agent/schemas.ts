@@ -108,11 +108,17 @@ export const CritiqueSchema = z.object({
 });
 export type Critique = z.infer<typeof CritiqueSchema>;
 
-/** One entry in `revisionHistory`. */
+/**
+ * One entry in `revisionHistory` — a full record of one critique cycle. It
+ * carries `passed` + `feedback` (a superset of the PRD §6 sketch) so the
+ * `field_report_revisions` row (PRD §9) is a direct map at persistence time.
+ */
 export const RevisionHistoryEntrySchema = z.object({
   revisionNumber: z.number().int(),
   markdown: z.string(),
   rubricScores: RubricScoresSchema,
+  passed: z.boolean(),
+  feedback: z.string(),
 });
 export type RevisionHistoryEntry = z.infer<typeof RevisionHistoryEntrySchema>;
 

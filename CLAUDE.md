@@ -103,9 +103,14 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
 - **Day 1:** scaffold + linear graph skeleton with a stub critique. Done.
 - **Day 2:** real critique node + cyclic write→critique edge + `MAX_REVISIONS`
   termination + `tests/agent/termination.test.ts`. Done.
-- **Day 3 (current):** the `webSearch`, `cloudinaryMetadata`, and
+- **Day 3:** the `webSearch`, `cloudinaryMetadata`, and
   `existingWanderlearnCourses` tools, wired into the research node. Done.
   `webSearch` calls the Tavily REST API directly — no `@langchain/community`
   (its 1.x release has an `ERESOLVE` peer conflict with `@langchain/core` 1.x)
   and no SDK. The ≤5-calls-per-run cap is a node-level guard in `research`.
-- **Day 4:** the operator UI — the side-by-side revision viewer.
+- **Day 4 (current):** the operator UI + API surface — `/api/field-report/*`
+  routes, the `/field-report` list, the `/field-report/new` capture form, and
+  the side-by-side revision viewer at `/field-report/:id`. `/generate` runs the
+  agent synchronously and persists the report; nodes stay pure — DB writes live
+  in `src/lib/reports.ts`, called from the route. Done.
+- **Day 5:** LangSmith run-id capture + run the agent on the real MUCHO capture.

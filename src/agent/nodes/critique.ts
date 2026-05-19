@@ -96,19 +96,22 @@ export async function critique(
   }
 
   const passed = isPassing(rubricScores);
+  const feedback = summarizeFeedback(rubricScores);
 
   return {
     critique: {
       revisionNumber: draft.revisionNumber,
       rubricScores,
       passed,
-      feedback: summarizeFeedback(rubricScores),
+      feedback,
     },
     revisionHistory: [
       {
         revisionNumber: draft.revisionNumber,
         markdown: draft.markdown,
         rubricScores,
+        passed,
+        feedback,
       },
     ],
   };
