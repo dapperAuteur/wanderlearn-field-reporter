@@ -115,8 +115,10 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
   the side-by-side revision viewer at `/field-report/:id`. `/generate` runs the
   agent synchronously and persists the report; nodes stay pure — DB writes live
   in `src/lib/reports.ts`, called from the route. Done.
-- **Day 5 (current):** dual-provider LLM — Anthropic (Claude Sonnet 4.6) or
-  Google (Gemini 2.5 Pro), switchable per run from the capture form — plus
-  LangSmith run-id capture. Done. Running the agent on the real MUCHO capture is
-  the operator's to do once a provider key has credit.
-- **Day 6:** the four `docs/lessons/` curriculum files.
+- **Day 5:** dual-provider LLM — Anthropic (Claude Sonnet 4.6) or Google
+  (Gemini 2.5 Pro), switchable per run from the capture form — plus LangSmith
+  run-id capture. Done.
+- **Day 6 (current):** the four `docs/lessons/` curriculum files — code-along
+  lessons on reflection loops, rubrics, LangSmith evals, and termination, each
+  on a distinct domain, APA 7 cited. Done.
+- **Day 7:** polish + ship the public repo.
