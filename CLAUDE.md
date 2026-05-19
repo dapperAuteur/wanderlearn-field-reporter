@@ -97,6 +97,11 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
   `LANGSMITH_API_KEY` is missing.
 - **The `webSearch` tool** (Day 3) may never be called more than 5 times per
   agent run — enforced as a node-level guard, never a prompt instruction.
+- **Auth** is single-user email-link sign-in (hand-rolled, not NextAuth).
+  `src/proxy.ts` is the optimistic gate; `src/lib/auth/dal.ts` holds the
+  authoritative checks (`requireUser` / `requireApiUser`) — proxy alone is never
+  the boundary. Only `ADMIN_EMAIL` may sign in; the link is sent via the Mailgun
+  HTTP API; the session is a jose-signed JWT cookie.
 - **Build plan:** the PRD is `plans/PRD-3-wanderlearn-field-reporter.md`; the
   approved Day-1 plan is `~/.claude/plans/add-plans-dir-to-elegant-cascade.md`.
 
@@ -121,6 +126,10 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
 - **Day 6:** the four `docs/lessons/` curriculum files — code-along lessons on
   reflection loops, rubrics, LangSmith evals, and termination, each on a
   distinct domain, APA 7 cited. Done.
-- **Day 7 (current):** polish — `react-markdown` rendering of lesson drafts and
-  the final lesson in the report viewer — and ship. The 7-day build plan is
-  complete; the agent is deployed and the repo is the portfolio piece. Done.
+- **Day 7:** polish — `react-markdown` rendering of lesson drafts and the final
+  lesson in the report viewer — and ship. The 7-day build plan is complete; the
+  agent is deployed and the repo is the portfolio piece. Done.
+- **Post-launch:** email-link auth — `src/proxy.ts` gates the whole app,
+  single-user magic-link sign-in (jose JWT session, single-use token, Mailgun
+  HTTP API). Adds the `login_tokens` table (migration `0002`). Needs the auth
+  env vars from `plans/user-tasks/05-provision-auth-mailgun.md`. Done.

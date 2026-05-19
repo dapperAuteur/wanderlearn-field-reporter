@@ -28,6 +28,18 @@ const EnvSchema = z.object({
   STORAGE_DATABASE_URL_UNPOOLED: z.string().url().optional(),
   /** Existing Wanderlearn Cloudinary tenant (`cloudinaryMetadata` tool, Day 3). */
   CLOUDINARY_URL: z.string().min(1).optional(),
+
+  /* --- Auth — email-link sign-in (the operator console is single-user) --- */
+  /** Signing secret for the session JWT and the magic-link token. */
+  NEXTAUTH_SECRET: z.string().min(1).optional(),
+  /** The one address allowed to sign in; every other email is rejected. */
+  ADMIN_EMAIL: z.string().min(1).optional(),
+  /** `From:` header on the magic-link email. */
+  EMAIL_FROM: z.string().min(1).optional(),
+  /** Mailgun sending domain — the magic-link email is sent through it. */
+  MAILGUN_DOMAIN: z.string().min(1).optional(),
+  /** Mailgun private API key — used for HTTP Basic auth against the API. */
+  MAILGUN_API_KEY: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

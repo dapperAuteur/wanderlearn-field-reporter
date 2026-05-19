@@ -60,5 +60,26 @@ export const fieldReportRevisions = pgTable("field_report_revisions", {
     .defaultNow(),
 });
 
+/**
+ * One row per issued magic-link sign-in token (email-link auth).
+ *
+ * Only a SHA-256 hash of the token is stored — a leaked row never yields a
+ * usable link. `consumedAt` makes each token strictly single-use; `expiresAt`
+ * bounds the window. Rows are disposable: a row past its expiry can be deleted.
+ */
+export const loginTokens = pgTable("login_tokens", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull(),
+  /** SHA-256 hex digest of the raw token that rides in the email link. */
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  /** Set the moment the token is redeemed; a second redemption is refused. */
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export type FieldReport = typeof fieldReports.$inferSelect;
 export type FieldReportRevision = typeof fieldReportRevisions.$inferSelect;
+export type LoginToken = typeof loginTokens.$inferSelect;

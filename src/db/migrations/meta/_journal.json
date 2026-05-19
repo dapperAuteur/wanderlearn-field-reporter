@@ -15,6 +15,13 @@
       "when": 1779184982896,
       "tag": "0001_reflective_dracula",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779213597880,
+      "tag": "0002_marvelous_shiver_man",
+      "breakpoints": true
     }
   ]
 }
