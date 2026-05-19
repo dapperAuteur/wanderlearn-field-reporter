@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { getFieldReport } from "@/lib/reports";
 import { getLangsmithRunUrl } from "@/lib/langsmith";
-import { requireApiUser } from "@/lib/auth/dal";
+
+// Intentionally unguarded: the report views are public, so the LangSmith trace
+// link they expose stays reachable too. The endpoint only redirects to
+// LangSmith — no agent run, no DB write, no spend.
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,9 +22,6 @@ export async function GET(
   _request: Request,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
-  const auth = await requireApiUser();
-  if (auth instanceof NextResponse) return auth;
-
   const { id } = await context.params;
   if (!UUID_RE.test(id)) {
     return NextResponse.json({ ok: false }, { status: 404 });
