@@ -11,6 +11,7 @@ import {
 } from "@/agent/schemas";
 import type { FieldReportState } from "@/agent/state";
 import { saveFieldReport } from "@/lib/reports";
+import { requireApiUser } from "@/lib/auth/dal";
 
 // The graph runs several LLM-touching nodes synchronously.
 export const runtime = "nodejs";
@@ -35,6 +36,9 @@ const GenerateInputSchema = z.object({
  * addressable. A durable queue would replace this at production scale.
  */
 export async function POST(request: Request): Promise<NextResponse> {
+  const auth = await requireApiUser();
+  if (auth instanceof NextResponse) return auth;
+
   let json: unknown;
   try {
     json = await request.json();

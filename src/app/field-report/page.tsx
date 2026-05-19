@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listFieldReports } from "@/lib/reports";
 import { LLM_PROVIDER_LABELS } from "@/agent/schemas";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -13,12 +14,15 @@ export default async function FieldReportListPage() {
     <main className="mx-auto max-w-3xl px-6 py-12">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">Field reports</h1>
-        <Link
-          href="/field-report/new"
-          className="rounded-md bg-sky-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-sky-700"
-        >
-          New capture
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/field-report/new"
+            className="rounded-md bg-sky-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-sky-700"
+          >
+            New capture
+          </Link>
+          <SignOutButton />
+        </div>
       </div>
       <p className="mt-1 text-sm text-slate-500">
         Lesson drafts the agent generated from Wanderlearn captures, newest
