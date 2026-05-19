@@ -118,7 +118,9 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
 - **Day 5:** dual-provider LLM — Anthropic (Claude Sonnet 4.6) or Google
   (Gemini 2.5 Flash), switchable per run from the capture form — plus LangSmith
   run-id capture. Done. (Flash, not Pro: Pro is not on the Gemini free tier.)
-- **Day 6 (current):** the four `docs/lessons/` curriculum files — code-along
-  lessons on reflection loops, rubrics, LangSmith evals, and termination, each
-  on a distinct domain, APA 7 cited. Done.
-- **Day 7:** polish + ship the public repo.
+- **Day 6:** the four `docs/lessons/` curriculum files — code-along lessons on
+  reflection loops, rubrics, LangSmith evals, and termination, each on a
+  distinct domain, APA 7 cited. Done.
+- **Day 7 (current):** polish — `react-markdown` rendering of lesson drafts and
+  the final lesson in the report viewer — and ship. The 7-day build plan is
+  complete; the agent is deployed and the repo is the portfolio piece. Done.

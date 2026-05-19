@@ -4,6 +4,7 @@ import { getFieldReport } from "@/lib/reports";
 import { getLangsmithRunUrl } from "@/lib/langsmith";
 import { LLM_PROVIDER_LABELS } from "@/agent/schemas";
 import { RevisionViewer } from "../components/RevisionViewer";
+import { Markdown } from "../components/Markdown";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -85,9 +86,9 @@ export default async function FieldReportDetailPage({
       <section className="mt-10" aria-label="Final lesson">
         <h2 className="text-lg font-semibold tracking-tight">Final lesson</h2>
         {report.finalMarkdown ? (
-          <pre className="mt-3 whitespace-pre-wrap break-words rounded-md border border-slate-200 bg-white p-5 font-sans text-sm leading-relaxed text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
-            {report.finalMarkdown}
-          </pre>
+          <div className="mt-3 rounded-md border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
+            <Markdown>{report.finalMarkdown}</Markdown>
+          </div>
         ) : (
           <p className="mt-2 text-sm text-slate-500">
             No final lesson — this run was flagged for review before it passed.
