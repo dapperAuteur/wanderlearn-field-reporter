@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { FieldReportRevision } from "@/db/schema";
 import { RubricBreakdown } from "./RubricBreakdown";
+import { Markdown } from "./Markdown";
 
 /**
  * The revision viewer — the centerpiece of the operator UI (PRD §11).
@@ -64,9 +65,9 @@ export function RevisionViewer({
           <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Revision {revision.revisionNumber} — draft
           </h3>
-          <pre className="mt-2 max-h-[28rem] overflow-auto whitespace-pre-wrap break-words rounded-md border border-slate-200 bg-slate-50 p-4 font-sans text-sm leading-relaxed text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
-            {revision.markdown}
-          </pre>
+          <div className="mt-2 max-h-112 overflow-auto rounded-md border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+            <Markdown>{revision.markdown}</Markdown>
+          </div>
         </section>
 
         <section aria-label={`Revision ${revision.revisionNumber} rubric`}>

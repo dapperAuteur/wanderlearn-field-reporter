@@ -9,10 +9,12 @@ rubric and revises** until the draft passes or hits a maximum revision count.
 Part of the WitUS ecosystem; a sibling of
 [Wanderlearn](https://wanderlearn.witus.online).
 
-## Status — Day 6
+**Live:** <https://wanderlearn.field.reporter.witus.online>
 
-**The full agent + operator UI + curriculum.** The agent runs the full
-self-critique cycle:
+## Status — Day 7 — shipped
+
+**The full agent, operator UI, and curriculum — built, deployed, documented.**
+The agent runs the full self-critique cycle:
 
 ```
 research → outline → write → critique → (pass → image prompts | fail → revise | give up → human review)
