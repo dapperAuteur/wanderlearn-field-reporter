@@ -9,10 +9,10 @@ rubric and revises** until the draft passes or hits a maximum revision count.
 Part of the WitUS ecosystem; a sibling of
 [Wanderlearn](https://wanderlearn.witus.online).
 
-## Status — Day 5
+## Status — Day 6
 
-**Reflection loop + research tools + operator UI + dual provider.** The agent
-runs the full self-critique cycle:
+**The full agent + operator UI + curriculum.** The agent runs the full
+self-critique cycle:
 
 ```
 research → outline → write → critique → (pass → image prompts | fail → revise | give up → human review)
@@ -91,6 +91,16 @@ tests/
   agent/critique.test.ts   Day-1 end-to-end graph wiring test
   fixtures/                placeholder MUCHO Museo del Chocolate capture
 ```
+
+## Curriculum
+
+Four code-along lessons on the LangGraph patterns behind this agent — each
+taught on a different sample domain so the patterns transfer:
+
+1. [Reflection loops](docs/lessons/01-reflection-loops.md)
+2. [Writing rubrics an LLM can score](docs/lessons/02-writing-rubrics.md)
+3. [Turning a rubric into a LangSmith eval](docs/lessons/03-langsmith-evals.md)
+4. [Cyclic graphs without infinite loops](docs/lessons/04-termination.md)
 
 ## Environment
 
