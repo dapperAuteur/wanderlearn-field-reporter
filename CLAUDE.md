@@ -100,10 +100,9 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
 
 ### Day status
 
-- **Day 1 (current):** scaffold + linear graph skeleton with a stub critique
-  that always passes. No cyclic loop yet.
-- **Day 2:** real critique node + cyclic write→critique edge + `MAX_REVISIONS`
-  termination + `tests/agent/termination.test.ts`.
+- **Day 1:** scaffold + linear graph skeleton with a stub critique. Done.
+- **Day 2 (current):** real critique node + cyclic write→critique edge +
+  `MAX_REVISIONS` termination + `tests/agent/termination.test.ts`. Done.
 - **Day 3:** `webSearch` (Tavily) and `cloudinaryMetadata` tools.
   `@langchain/community` was deferred from Day 1 — installing it alongside
   `@langchain/core` 1.x triggers an `ERESOLVE` peer conflict (it drags in the
