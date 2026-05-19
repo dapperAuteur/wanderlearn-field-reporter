@@ -28,7 +28,7 @@ export type LlmProvider = z.infer<typeof LlmProviderSchema>;
 /** Human-readable model name per provider, for the operator UI. */
 export const LLM_PROVIDER_LABELS: Record<LlmProvider, string> = {
   anthropic: "Claude Sonnet 4.6",
-  google: "Gemini 2.5 Pro",
+  google: "Gemini 2.5 Flash",
 };
 
 export const LocationSchema = z.object({

@@ -18,8 +18,13 @@ import type { LlmProvider } from "./schemas";
 
 /** Claude Sonnet 4.6 — the Anthropic model (PRD §5). */
 export const ANTHROPIC_MODEL = "claude-sonnet-4-6";
-/** Gemini 2.5 Pro — the Google model (PRD Appendix A). */
-export const GOOGLE_MODEL = "gemini-2.5-pro";
+/**
+ * Gemini 2.5 Flash — the Google model. The PRD Appendix names Gemini 2.5 Pro,
+ * but Pro is not on the Gemini API free tier (the free tier returns HTTP 429
+ * with `limit: 0` for Pro). Flash runs on the free tier, so it is the default
+ * that lets the agent run for $0; switch to Pro only with billing enabled.
+ */
+export const GOOGLE_MODEL = "gemini-2.5-flash";
 
 /** Bounded retries — a fail-soft node degrades gracefully rather than hanging. */
 const MAX_RETRIES = 2;

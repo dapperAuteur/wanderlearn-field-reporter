@@ -85,7 +85,7 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
   shadcn/ui, `@langchain/langgraph`, Drizzle ORM on `@neondatabase/serverless`,
   Vitest. Node 20+.
 - **LLM:** dual-provider via the factory in `src/agent/llm.ts` — Claude Sonnet 4.6
-  (`@langchain/anthropic`) or Gemini 2.5 Pro (`@langchain/google-genai`), chosen
+  (`@langchain/anthropic`) or Gemini 2.5 Flash (`@langchain/google-genai`), chosen
   per run (`state.llmProvider`, set from the capture form) so draft quality can
   be compared across providers.
 - **The agent** is a cyclic reflection graph: research → outline → write →
@@ -116,8 +116,8 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
   agent synchronously and persists the report; nodes stay pure — DB writes live
   in `src/lib/reports.ts`, called from the route. Done.
 - **Day 5:** dual-provider LLM — Anthropic (Claude Sonnet 4.6) or Google
-  (Gemini 2.5 Pro), switchable per run from the capture form — plus LangSmith
-  run-id capture. Done.
+  (Gemini 2.5 Flash), switchable per run from the capture form — plus LangSmith
+  run-id capture. Done. (Flash, not Pro: Pro is not on the Gemini free tier.)
 - **Day 6 (current):** the four `docs/lessons/` curriculum files — code-along
   lessons on reflection loops, rubrics, LangSmith evals, and termination, each
   on a distinct domain, APA 7 cited. Done.

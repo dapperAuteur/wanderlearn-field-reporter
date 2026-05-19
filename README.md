@@ -29,7 +29,7 @@ and the Wanderlearn course catalog — before the LLM synthesizes the facts.
 The operator console lives at `/field-report`: submit a capture at
 `/field-report/new`, then scrub a report's revision history in the side-by-side
 viewer at `/field-report/:id`. Each run picks its LLM provider — Claude Sonnet
-4.6 or Gemini 2.5 Pro — so draft quality can be compared. Full plan:
+4.6 or Gemini 2.5 Flash — so draft quality can be compared. Full plan:
 [`plans/PRD-3-wanderlearn-field-reporter.md`](plans/PRD-3-wanderlearn-field-reporter.md).
 
 ## Stack
