@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { LLM_PROVIDER_LABELS } from "@/agent/schemas";
 
 /** The MUCHO Museo del Chocolate fixture, for the "Load sample" shortcut. */
 const MUCHO_SAMPLE = {
@@ -29,6 +30,7 @@ const MUCHO_SAMPLE = {
     "wanderlearn/mucho/courtyard-kitchen\nwanderlearn/mucho/antique-molds\nwanderlearn/mucho/tasting-room",
   operatorNotes: "Sample capture loaded from the MUCHO fixture.",
   targetAudience: "curious_learner",
+  llmProvider: "anthropic",
 };
 
 const EMPTY_FORM = {
@@ -40,6 +42,7 @@ const EMPTY_FORM = {
   imageRefs: "",
   operatorNotes: "",
   targetAudience: "curious_learner",
+  llmProvider: "anthropic",
 };
 
 const labelClass =
@@ -83,6 +86,7 @@ export default function NewCapturePage() {
             operatorNotes: form.operatorNotes || undefined,
           },
           targetAudience: form.targetAudience,
+          llmProvider: form.llmProvider,
         }),
       });
       const data: { ok?: boolean; reportId?: string; error?: string } =
@@ -207,7 +211,7 @@ export default function NewCapturePage() {
           </label>
         </div>
 
-        <div>
+        <div className="grid grid-cols-2 gap-4">
           <label className={labelClass}>
             Target audience
             <select
@@ -218,6 +222,20 @@ export default function NewCapturePage() {
               <option value="general">General</option>
               <option value="curious_learner">Curious learner</option>
               <option value="practitioner">Practitioner</option>
+            </select>
+          </label>
+          <label className={labelClass}>
+            LLM provider
+            <select
+              className={inputClass}
+              value={form.llmProvider}
+              onChange={(e) => update("llmProvider", e.target.value)}
+            >
+              {Object.entries(LLM_PROVIDER_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </select>
           </label>
         </div>

@@ -21,6 +21,16 @@ export const TargetAudienceSchema = z.enum([
 ]);
 export type TargetAudience = z.infer<typeof TargetAudienceSchema>;
 
+/** Which LLM provider powers a run — selectable per run (PRD Appendix A). */
+export const LlmProviderSchema = z.enum(["anthropic", "google"]);
+export type LlmProvider = z.infer<typeof LlmProviderSchema>;
+
+/** Human-readable model name per provider, for the operator UI. */
+export const LLM_PROVIDER_LABELS: Record<LlmProvider, string> = {
+  anthropic: "Claude Sonnet 4.6",
+  google: "Gemini 2.5 Pro",
+};
+
 export const LocationSchema = z.object({
   name: z.string(),
   gps: z.object({ lat: z.number(), lng: z.number() }),

@@ -30,6 +30,7 @@ export interface FieldReportDetail {
 export async function saveFieldReport(
   reportId: string,
   state: FieldReportState,
+  langsmithRunId: string | null,
 ): Promise<string> {
   const db = getDb();
 
@@ -42,10 +43,11 @@ export async function saveFieldReport(
     rawTranscript: state.rawInput.transcript,
     rawImageRefs: state.rawInput.imageRefs,
     targetAudience: state.targetAudience,
+    llmProvider: state.llmProvider,
     finalMarkdown: state.finalMarkdown ?? null,
     imagePrompts: state.imagePrompts ?? null,
     flaggedForHumanReview: state.flaggedForHumanReview,
-    langsmithRunId: null,
+    langsmithRunId,
     completedAt: new Date(),
   });
 

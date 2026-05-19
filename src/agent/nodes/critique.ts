@@ -70,10 +70,10 @@ export async function critique(
 
   let rubricScores: RubricScores;
   try {
-    const model = getChatModel({ temperature: 0 }).withStructuredOutput(
-      RubricScoresSchema,
-      { name: "score_rubric" },
-    );
+    const model = getChatModel({
+      provider: state.llmProvider,
+      temperature: 0,
+    }).withStructuredOutput(RubricScoresSchema, { name: "score_rubric" });
     rubricScores = (await model.invoke([
       ["system", SYSTEM_PROMPT],
       [

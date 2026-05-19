@@ -84,8 +84,10 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
 - **Stack:** Next.js 16 (app router, `src/`), TypeScript strict, Tailwind v4,
   shadcn/ui, `@langchain/langgraph`, Drizzle ORM on `@neondatabase/serverless`,
   Vitest. Node 20+.
-- **LLM:** Claude Sonnet 4.6 (`@langchain/anthropic`, model id
-  `claude-sonnet-4-6`), built via the factory in `src/agent/llm.ts`.
+- **LLM:** dual-provider via the factory in `src/agent/llm.ts` — Claude Sonnet 4.6
+  (`@langchain/anthropic`) or Gemini 2.5 Pro (`@langchain/google-genai`), chosen
+  per run (`state.llmProvider`, set from the capture form) so draft quality can
+  be compared across providers.
 - **The agent** is a cyclic reflection graph: research → outline → write →
   critique → (revise | done). The rubric in `src/agent/rubric.ts` is the single
   source of truth — the critique node scores against it; edit the rubric there,
@@ -108,9 +110,13 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
   `webSearch` calls the Tavily REST API directly — no `@langchain/community`
   (its 1.x release has an `ERESOLVE` peer conflict with `@langchain/core` 1.x)
   and no SDK. The ≤5-calls-per-run cap is a node-level guard in `research`.
-- **Day 4 (current):** the operator UI + API surface — `/api/field-report/*`
+- **Day 4:** the operator UI + API surface — `/api/field-report/*`
   routes, the `/field-report` list, the `/field-report/new` capture form, and
   the side-by-side revision viewer at `/field-report/:id`. `/generate` runs the
   agent synchronously and persists the report; nodes stay pure — DB writes live
   in `src/lib/reports.ts`, called from the route. Done.
-- **Day 5:** LangSmith run-id capture + run the agent on the real MUCHO capture.
+- **Day 5 (current):** dual-provider LLM — Anthropic (Claude Sonnet 4.6) or
+  Google (Gemini 2.5 Pro), switchable per run from the capture form — plus
+  LangSmith run-id capture. Done. Running the agent on the real MUCHO capture is
+  the operator's to do once a provider key has credit.
+- **Day 6:** the four `docs/lessons/` curriculum files.

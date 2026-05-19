@@ -9,10 +9,10 @@ rubric and revises** until the draft passes or hits a maximum revision count.
 Part of the WitUS ecosystem; a sibling of
 [Wanderlearn](https://wanderlearn.witus.online).
 
-## Status — Day 4
+## Status — Day 5
 
-**Reflection loop + research tools + operator UI.** The agent runs the full
-self-critique cycle:
+**Reflection loop + research tools + operator UI + dual provider.** The agent
+runs the full self-critique cycle:
 
 ```
 research → outline → write → critique → (pass → image prompts | fail → revise | give up → human review)
@@ -28,13 +28,14 @@ and the Wanderlearn course catalog — before the LLM synthesizes the facts.
 
 The operator console lives at `/field-report`: submit a capture at
 `/field-report/new`, then scrub a report's revision history in the side-by-side
-viewer at `/field-report/:id`. Full plan:
+viewer at `/field-report/:id`. Each run picks its LLM provider — Claude Sonnet
+4.6 or Gemini 2.5 Pro — so draft quality can be compared. Full plan:
 [`plans/PRD-3-wanderlearn-field-reporter.md`](plans/PRD-3-wanderlearn-field-reporter.md).
 
 ## Stack
 
 Next.js 16 · TypeScript (strict) · Tailwind v4 · shadcn/ui ·
-`@langchain/langgraph` · `@langchain/anthropic` (Claude Sonnet 4.6) ·
+`@langchain/langgraph` · `@langchain/anthropic` + `@langchain/google-genai` ·
 Drizzle ORM + Neon Postgres · LangSmith · Vitest · Node 20+.
 
 ## Quick start

@@ -86,10 +86,10 @@ export async function research(
   ].join("\n");
 
   try {
-    const model = getChatModel({ temperature: 0.3 }).withStructuredOutput(
-      ResearchSchema,
-      { name: "extract_research" },
-    );
+    const model = getChatModel({
+      provider: state.llmProvider,
+      temperature: 0.3,
+    }).withStructuredOutput(ResearchSchema, { name: "extract_research" });
     const research = await model.invoke([
       ["system", SYSTEM_PROMPT],
       ["human", userMessage],

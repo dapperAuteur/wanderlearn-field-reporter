@@ -14,6 +14,7 @@ import type {
   FieldReportLocation,
   RawInput,
   TargetAudience,
+  LlmProvider,
   Research,
   Outline,
   Draft,
@@ -27,6 +28,11 @@ export const FieldReportStateAnnotation = Annotation.Root({
   location: Annotation<FieldReportLocation>,
   rawInput: Annotation<RawInput>,
   targetAudience: Annotation<TargetAudience>,
+  /** Which LLM provider powers this run (PRD Appendix A — selectable per run). */
+  llmProvider: Annotation<LlmProvider>({
+    reducer: (_current, update) => update,
+    default: () => "anthropic",
+  }),
 
   /* Node outputs — each filled in as the graph progresses. */
   research: Annotation<Research | undefined>,

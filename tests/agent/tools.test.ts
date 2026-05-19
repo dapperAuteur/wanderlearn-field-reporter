@@ -64,6 +64,7 @@ function baseState(webSearchCallCount: number): FieldReportState {
     },
     rawInput: { transcript: "A museum about chocolate.", imageRefs: [] },
     targetAudience: "curious_learner",
+    llmProvider: "anthropic",
     research: undefined,
     outline: undefined,
     draft: undefined,
