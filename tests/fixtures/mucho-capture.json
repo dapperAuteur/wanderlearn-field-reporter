@@ -1,0 +1,18 @@
+{
+  "reportId": "mucho-capture-fixture-0001",
+  "location": {
+    "name": "MUCHO Museo del Chocolate",
+    "gps": { "lat": 19.4264, "lng": -99.1618 },
+    "capturedAt": "2026-03-14T17:30:00.000Z"
+  },
+  "rawInput": {
+    "transcript": "Welcome to MUCHO, the Museo del Chocolate, housed in a restored early twentieth-century mansion in Mexico City's Colonia Juarez neighborhood. The museum traces the story of chocolate from the cacao tree to the finished bar. Cacao originated in the tropical forests of Mesoamerica, where the Olmec, Maya, and Mexica peoples cultivated it more than three thousand years ago. For these civilizations cacao was sacred: it was used in ritual, offered to the gods, and traded as currency. The Maya prepared a frothy, bitter drink by grinding roasted cacao beans on a stone metate and pouring the liquid between vessels to raise foam. When Spanish colonizers carried cacao across the Atlantic, Europeans sweetened the drink with cane sugar and spices, and chocolate slowly spread through the courts of Europe. The museum's galleries display antique molds, tin packaging, vintage advertising, and porcelain serving sets that trace this transformation. In the courtyard, a working kitchen offers daily demonstrations: visitors watch beans being roasted, winnowed, and ground into a dark paste, then tempered and poured into molds. A tasting room invites guests to compare single-origin chocolate from Tabasco, Chiapas, and Oaxaca. MUCHO's mission is to preserve cacao heritage and to remind every visitor that a bar of chocolate begins as a pod on a tree.",
+    "imageRefs": [
+      "wanderlearn/mucho/courtyard-kitchen",
+      "wanderlearn/mucho/antique-molds",
+      "wanderlearn/mucho/tasting-room"
+    ],
+    "operatorNotes": "Placeholder capture for Day 1 graph wiring. The real MUCHO transcript is added on Day 5."
+  },
+  "targetAudience": "curious_learner"
+}
