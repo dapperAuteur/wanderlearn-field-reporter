@@ -37,10 +37,14 @@ draft quality can be compared side by side.
 then scrub a report's revision history in the side-by-side viewer at
 `/field-report/:id` to see how each critique cycle changed the draft.
 
-The console is single-user. [`src/proxy.ts`](src/proxy.ts) gates every route;
-the one address in `ADMIN_EMAIL` signs in through an emailed magic link — a
-jose-signed JWT session, a single-use token, Mailgun delivery, no password. The
-auth module is [`src/lib/auth/`](src/lib/auth/).
+The read-only views — the report list and individual lessons — stay public so
+visitors can browse the agent's work without signing in. The cost-incurring
+paths (the capture form at `/field-report/new` and the `POST
+/api/field-report/generate` endpoint) are single-user: the one address in
+`ADMIN_EMAIL` signs in through an emailed magic link, a jose-signed JWT
+session, a single-use token, Mailgun delivery, no password. The gate lives in
+[`src/proxy.ts`](src/proxy.ts); the auth module is
+[`src/lib/auth/`](src/lib/auth/).
 
 ## Stack
 

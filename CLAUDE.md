@@ -97,10 +97,13 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
   `LANGSMITH_API_KEY` is missing.
 - **The `webSearch` tool** (Day 3) may never be called more than 5 times per
   agent run — enforced as a node-level guard, never a prompt instruction.
-- **Auth** is single-user email-link sign-in (hand-rolled, not NextAuth).
-  `src/proxy.ts` is the optimistic gate; `src/lib/auth/dal.ts` holds the
-  authoritative checks (`requireUser` / `requireApiUser`) — proxy alone is never
-  the boundary. Only `ADMIN_EMAIL` may sign in; the link is sent via the Mailgun
+- **Auth** is single-user email-link sign-in (hand-rolled, not NextAuth). The
+  gate is deliberately narrow: read-only report views stay public so portfolio
+  visitors can browse, and only the cost-incurring paths (the capture form and
+  `POST /api/field-report/generate`) require sign-in. The allow-list lives in
+  `isPublic()` inside `src/proxy.ts`; the authoritative checks (`requireUser` /
+  `requireApiUser`) live in `src/lib/auth/dal.ts` — proxy alone is never the
+  boundary. Only `ADMIN_EMAIL` may sign in; the link is sent via the Mailgun
   HTTP API; the session is a jose-signed JWT cookie.
 - **Build plan:** the PRD is `plans/PRD-3-wanderlearn-field-reporter.md`; the
   approved Day-1 plan is `~/.claude/plans/add-plans-dir-to-elegant-cascade.md`.
