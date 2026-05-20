@@ -11,7 +11,9 @@
  */
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { getEnv } from "@/lib/env";
+import { submitToInbox } from "@/lib/submit-to-inbox";
 import { addToWaitlist } from "@/lib/waitlist";
 import { endSession } from "./dal";
 import { sendLoginLink } from "./mailer";
@@ -90,6 +92,20 @@ export async function joinWaitlist(
   }
   try {
     await addToWaitlist(email);
+    // Fire-and-forget after the user-facing response renders — the WitUS Inbox
+    // receives the same signup so BAM can triage and reply from the central
+    // triage queue. Skipped when INBOX_* env vars are unset (dev-log fallback).
+    after(async () => {
+      await submitToInbox({
+        form_type: "waitlist-signup",
+        submitter_email: email,
+        priority: "normal",
+        payload: {
+          email,
+          submitted_at: new Date().toISOString(),
+        },
+      });
+    });
     return { status: "waitlisted" };
   } catch (err) {
     console.error("[waitlist] failed to add signup:", err);
