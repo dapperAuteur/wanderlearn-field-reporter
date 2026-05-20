@@ -40,6 +40,14 @@ const EnvSchema = z.object({
   MAILGUN_DOMAIN: z.string().min(1).optional(),
   /** Mailgun private API key — used for HTTP Basic auth against the API. */
   MAILGUN_API_KEY: z.string().min(1).optional(),
+
+  /* --- WitUS Inbox — triage queue receiver for waitlist signups ----------- */
+  /** Inbox webhook endpoint, e.g. `https://inbox.witus.online/api/ingest`. */
+  INBOX_INGEST_URL: z.string().min(1).optional(),
+  /** HMAC-SHA256 secret matching this slug's row in the Inbox `INGEST_SOURCES`. */
+  INBOX_INGEST_SECRET: z.string().min(1).optional(),
+  /** Lowercase kebab slug this product is registered under in the Inbox. */
+  INBOX_SOURCE_SLUG: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
