@@ -27,6 +27,12 @@ export default async function FieldReportListPage() {
               >
                 New capture
               </Link>
+              <Link
+                href="/admin"
+                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-400 dark:border-slate-700 dark:text-slate-400"
+              >
+                Admin
+              </Link>
               <SignOutButton />
             </>
           ) : (
