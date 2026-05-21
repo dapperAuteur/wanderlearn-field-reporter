@@ -9,6 +9,7 @@
  * address is published on the portfolio anyway, so the screen was theater, and
  * a useful denied-state matters more than the pretense.
  */
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
@@ -116,5 +117,7 @@ export async function joinWaitlist(
 /** Clear the session and return to the sign-in screen. */
 export async function signOut(): Promise<void> {
   await endSession();
+  // Drop the root layout's cache so the sticky nav re-renders signed-out.
+  revalidatePath("/", "layout");
   redirect("/signin");
 }

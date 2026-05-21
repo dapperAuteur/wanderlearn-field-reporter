@@ -1,13 +1,8 @@
 // When a second admin surface arrives, split this into `/admin/waitlist` and
 // add an `/admin` index — for now this is the single dashboard page.
 
-import Link from "next/link";
 import { requireUser } from "@/lib/auth/dal";
-import {
-  countWaitlistSignups,
-  listWaitlistSignups,
-} from "@/lib/waitlist";
-import { SignOutButton } from "@/components/sign-out-button";
+import { countWaitlistSignups, listWaitlistSignups } from "@/lib/waitlist";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -36,18 +31,7 @@ export default async function AdminPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Waitlist</h1>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/field-report"
-            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-400 dark:border-slate-700 dark:text-slate-400"
-          >
-            ← Field reports
-          </Link>
-          <SignOutButton />
-        </div>
-      </div>
+      <h1 className="text-2xl font-semibold tracking-tight">Waitlist</h1>
 
       <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
         <span className="font-semibold text-slate-900 dark:text-slate-100">
