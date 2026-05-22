@@ -46,6 +46,10 @@ session, a single-use token, Mailgun delivery, no password. The gate lives in
 [`src/proxy.ts`](src/proxy.ts); the auth module is
 [`src/lib/auth/`](src/lib/auth/).
 
+Non-admins who reach the sign-in screen can join a waitlist instead of being
+turned away; signups are reviewed in the `/admin` dashboard and forwarded to
+WitUS Inbox. A persistent global navigation header ties the console together.
+
 ## Stack
 
 Next.js 16 · TypeScript (strict) · Tailwind v4 · shadcn/ui ·
