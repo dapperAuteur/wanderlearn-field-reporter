@@ -11,6 +11,13 @@
  */
 import { z } from "zod";
 import { RUBRIC_CRITERIA, type RubricCriterion } from "./rubric";
+import {
+  FIELD_REPORTER_PROVIDERS,
+  PROVIDER_LABELS,
+  type LlmProvider,
+} from "./llm-config";
+
+export type { LlmProvider };
 
 /* --- Capture input — set once, at graph invocation -------------------- */
 
@@ -21,15 +28,13 @@ export const TargetAudienceSchema = z.enum([
 ]);
 export type TargetAudience = z.infer<typeof TargetAudienceSchema>;
 
-/** Which LLM provider powers a run — selectable per run (PRD Appendix A). */
-export const LlmProviderSchema = z.enum(["anthropic", "google"]);
-export type LlmProvider = z.infer<typeof LlmProviderSchema>;
+/** Which LLM provider powers a run — selectable per run (PRD Appendix A).
+ * The seven-member union is the single source of truth in `./llm-config.ts`. */
+export const LlmProviderSchema = z.enum(FIELD_REPORTER_PROVIDERS);
 
-/** Human-readable model name per provider, for the operator UI. */
-export const LLM_PROVIDER_LABELS: Record<LlmProvider, string> = {
-  anthropic: "Claude Sonnet 4.6",
-  google: "Gemini 2.5 Flash",
-};
+/** Human-readable label per provider, for the operator UI. Re-export of the
+ * cost-class-aware labels in `./llm-config` so existing imports keep working. */
+export const LLM_PROVIDER_LABELS = PROVIDER_LABELS;
 
 export const LocationSchema = z.object({
   name: z.string(),

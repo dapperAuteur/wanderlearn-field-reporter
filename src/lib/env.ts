@@ -12,10 +12,37 @@ import { z } from "zod";
  * Values that ARE present are still format-checked.
  */
 const EnvSchema = z.object({
-  /** Anthropic API key — Claude Sonnet 4.6 (PRD §5). */
+  /** Anthropic API key — Claude (paid, the PRD §5 baseline). */
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
-  /** Google Gemini API key — Gemini 2.5 Pro, the alternate provider (PRD App. A). */
+  /** Google Gemini API key — Gemini (paid, also a free tier on Flash). */
   GEMINI_API_KEY: z.string().min(1).optional(),
+  /** Cerebras free tier — Llama 3.3 70B via an OpenAI-compatible endpoint. */
+  CEREBRAS_API_KEY: z.string().min(1).optional(),
+  /** OpenRouter — `:free` models via OpenAI-compatible endpoint. */
+  OPENROUTER_API_KEY: z.string().min(1).optional(),
+  /** Mistral API key — its own SDK; free tier 1B tokens/month. */
+  MISTRAL_API_KEY: z.string().min(1).optional(),
+  /** Together AI — Llama 3.3 70B Turbo Free via OpenAI-compatible endpoint. */
+  TOGETHER_API_KEY: z.string().min(1).optional(),
+  /** Local Ollama base URL. Defaults to http://localhost:11434 in `llm.ts`. */
+  OLLAMA_BASE_URL: z.string().url().optional(),
+  /** Force a provider for runs that don't carry one in their request body
+   *  (e.g. background jobs). Optional; falls back to the admin-stored
+   *  default. Recognised values are the seven providers in `llm-config.ts`. */
+  FIELD_REPORTER_LLM_PROVIDER: z
+    .enum([
+      "anthropic",
+      "google",
+      "ollama",
+      "cerebras",
+      "openrouter",
+      "mistral",
+      "together",
+    ])
+    .optional(),
+  /** Comma-separated fallback chain for `buildChatModelWithFallback`. When
+   *  the primary throws, LangChain's withFallbacks tries each in order. */
+  FIELD_REPORTER_FALLBACK_PROVIDERS: z.string().optional(),
   /** Tavily key for the `webSearch` tool (wired Day 3). */
   TAVILY_API_KEY: z.string().min(1).optional(),
   /** LangSmith tracing — optional; the LangChain SDK no-ops without a key. */

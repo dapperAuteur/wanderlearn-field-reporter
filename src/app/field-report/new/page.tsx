@@ -3,7 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LLM_PROVIDER_LABELS } from "@/agent/schemas";
+import {
+  FIELD_REPORTER_PROVIDERS,
+  PROVIDER_COST_CLASS,
+  PROVIDER_LABELS,
+} from "@/agent/llm-config";
+
+const FREE_PROVIDERS = FIELD_REPORTER_PROVIDERS.filter(
+  (p) => PROVIDER_COST_CLASS[p] === "free",
+);
+const PAID_PROVIDERS = FIELD_REPORTER_PROVIDERS.filter(
+  (p) => PROVIDER_COST_CLASS[p] === "paid",
+);
 
 /** The MUCHO Museo del Chocolate fixture, for the "Load sample" shortcut. */
 const MUCHO_SAMPLE = {
@@ -231,12 +242,32 @@ export default function NewCapturePage() {
               value={form.llmProvider}
               onChange={(e) => update("llmProvider", e.target.value)}
             >
-              {Object.entries(LLM_PROVIDER_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
+              <optgroup label="Free (rate-limited, $0)">
+                {FREE_PROVIDERS.map((p) => (
+                  <option key={p} value={p}>
+                    {PROVIDER_LABELS[p]} · Free
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Paid (billed per token)">
+                {PAID_PROVIDERS.map((p) => (
+                  <option key={p} value={p}>
+                    {PROVIDER_LABELS[p]} · Paid
+                  </option>
+                ))}
+              </optgroup>
             </select>
+            <span className="mt-1 block text-xs font-normal text-slate-500">
+              The admin default lives at{" "}
+              <a
+                href="/admin/models"
+                className="underline hover:text-slate-700 dark:hover:text-slate-300"
+              >
+                /admin/models
+              </a>
+              . This picker overrides it for this run only (PRD App. A —
+              operator A/B compare).
+            </span>
           </label>
         </div>
 

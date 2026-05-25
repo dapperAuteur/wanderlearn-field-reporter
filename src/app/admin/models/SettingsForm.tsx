@@ -1,0 +1,397 @@
+"use client";
+
+// The model-configuration form on /admin/models: a run-default provider, one
+// model id per provider, generation defaults, and the tracing toggle. Saves
+// to PUT /api/admin/settings; a save takes effect on the next run.
+//
+// Cost-class UX: the provider <select> groups Free and Paid options with
+// <optgroup>, each option's label carries the cost class, and a persistent
+// banner above the form is amber when a paid provider is the run-default —
+// so a switch to a billed provider is never invisible.
+
+import { useState } from "react";
+import {
+  FIELD_REPORTER_PROVIDERS,
+  PROVIDER_COST_CLASS,
+  PROVIDER_LABELS,
+  type LlmProvider,
+} from "@/agent/llm-config";
+import type { FieldReporterSettings } from "@/lib/settings";
+
+const FREE_PROVIDERS = FIELD_REPORTER_PROVIDERS.filter(
+  (p) => PROVIDER_COST_CLASS[p] === "free",
+);
+const PAID_PROVIDERS = FIELD_REPORTER_PROVIDERS.filter(
+  (p) => PROVIDER_COST_CLASS[p] === "paid",
+);
+
+// Sentinel <select> value: "let me type an id the list does not have".
+const CUSTOM = "__custom__";
+
+// Curated model id options per provider, offered as a dropdown so the common
+// case needs no typing. "Custom model ID" stays available for models not yet
+// in this list.
+const MODEL_OPTIONS: Record<LlmProvider, { id: string; label: string }[]> = {
+  ollama: [
+    { id: "llama3.1:8b", label: "Llama 3.1 8B (laptop-friendly)" },
+    { id: "llama3.1:70b", label: "Llama 3.1 70B (heavy local)" },
+    { id: "qwen2.5:14b", label: "Qwen 2.5 14B" },
+  ],
+  cerebras: [
+    { id: "llama-3.3-70b", label: "Llama 3.3 70B (fast)" },
+    { id: "llama3.1-8b", label: "Llama 3.1 8B" },
+  ],
+  openrouter: [
+    { id: "deepseek/deepseek-chat:free", label: "DeepSeek Chat (free)" },
+    {
+      id: "meta-llama/llama-3.3-70b-instruct:free",
+      label: "Llama 3.3 70B Instruct (free)",
+    },
+    {
+      id: "qwen/qwen-2.5-72b-instruct:free",
+      label: "Qwen 2.5 72B Instruct (free)",
+    },
+  ],
+  mistral: [
+    { id: "mistral-small-latest", label: "Mistral Small" },
+    { id: "mistral-large-latest", label: "Mistral Large" },
+  ],
+  together: [
+    {
+      id: "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+      label: "Llama 3.3 70B Turbo (free)",
+    },
+    { id: "deepseek-ai/DeepSeek-V3", label: "DeepSeek V3" },
+  ],
+  anthropic: [
+    { id: "claude-opus-4-7", label: "Claude Opus 4.7 (most capable)" },
+    { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6 (balanced)" },
+    {
+      id: "claude-haiku-4-5-20251001",
+      label: "Claude Haiku 4.5 (fast, low cost)",
+    },
+  ],
+  google: [
+    { id: "gemini-2.5-pro", label: "Gemini 2.5 Pro (most capable)" },
+    { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash (fast, free tier)" },
+  ],
+};
+
+const FIELD_CLASS =
+  "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 " +
+  "dark:border-slate-700 dark:bg-slate-950";
+
+type Status =
+  | { kind: "idle" }
+  | { kind: "saving" }
+  | { kind: "saved" }
+  | { kind: "error"; message: string };
+
+interface Props {
+  initialSettings: FieldReporterSettings;
+  /** FIELD_REPORTER_LLM_PROVIDER, when set, overrides the stored provider. */
+  envProviderOverride: LlmProvider | null;
+  hasLangsmithKey: boolean;
+  /** Which providers have an API key configured server-side. */
+  providerKeyPresent: Record<LlmProvider, boolean>;
+}
+
+function providerOptionLabel(
+  p: LlmProvider,
+  hasKey: boolean,
+): string {
+  const cost = PROVIDER_COST_CLASS[p] === "free" ? "Free" : "Paid";
+  const base = `${PROVIDER_LABELS[p]} · ${cost}`;
+  return hasKey ? base : `${base} · no API key set`;
+}
+
+export function SettingsForm({
+  initialSettings,
+  envProviderOverride,
+  hasLangsmithKey,
+  providerKeyPresent,
+}: Props) {
+  const [settings, setSettings] = useState<FieldReporterSettings>(initialSettings);
+  const [status, setStatus] = useState<Status>({ kind: "idle" });
+
+  const provider = settings.provider;
+  const activeCostClass = PROVIDER_COST_CLASS[provider];
+
+  function patch(partial: Partial<FieldReporterSettings>) {
+    setSettings((s) => ({ ...s, ...partial }));
+    setStatus({ kind: "idle" });
+  }
+
+  function setModel(p: LlmProvider, value: string) {
+    setSettings((s) => ({ ...s, models: { ...s.models, [p]: value } }));
+    setStatus({ kind: "idle" });
+  }
+
+  async function onSave() {
+    setStatus({ kind: "saving" });
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(settings),
+      });
+      const data = (await res.json()) as {
+        settings?: FieldReporterSettings;
+        error?: string;
+      };
+      if (!res.ok || !data.settings) {
+        throw new Error(data.error ?? `Save failed (${res.status})`);
+      }
+      setSettings(data.settings);
+      setStatus({ kind: "saved" });
+    } catch (err) {
+      setStatus({
+        kind: "error",
+        message: err instanceof Error ? err.message : "Save failed",
+      });
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Cost-class banner — amber when paid so a switch is never invisible. */}
+      <div
+        role="status"
+        aria-live="polite"
+        className={
+          "rounded-md border px-3 py-2 text-sm " +
+          (activeCostClass === "paid"
+            ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200"
+            : "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200")
+        }
+      >
+        <strong>{PROVIDER_LABELS[provider]}</strong> is the run-default.{" "}
+        {activeCostClass === "paid"
+          ? "Billed per token — operators can still override per run, but the default costs money."
+          : "$0 in the normal case (rate-limited free tier or local)."}
+      </div>
+
+      {/* Run-default provider */}
+      <div>
+        <label
+          htmlFor="provider-select"
+          className="text-sm font-semibold text-slate-900 dark:text-slate-100"
+        >
+          Run-default provider
+        </label>
+        <p className="mt-1 text-xs text-slate-500">
+          The capture form pre-fills this. Operators can override per run for
+          A/B comparison.
+        </p>
+        <select
+          id="provider-select"
+          value={provider}
+          onChange={(e) =>
+            patch({ provider: e.target.value as LlmProvider })
+          }
+          className={`mt-2 ${FIELD_CLASS}`}
+        >
+          <optgroup label="Free (rate-limited, $0)">
+            {FREE_PROVIDERS.map((p) => (
+              <option key={p} value={p}>
+                {providerOptionLabel(p, providerKeyPresent[p])}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Paid (billed per token)">
+            {PAID_PROVIDERS.map((p) => (
+              <option key={p} value={p}>
+                {providerOptionLabel(p, providerKeyPresent[p])}
+              </option>
+            ))}
+          </optgroup>
+        </select>
+        {!providerKeyPresent[provider] && (
+          <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+            No API key is configured for{" "}
+            <strong>{PROVIDER_LABELS[provider]}</strong>. Saving still records
+            this choice, but runs will fail until the key is set in{" "}
+            <code className="font-mono">.env.local</code>.
+          </p>
+        )}
+        {envProviderOverride && (
+          <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+            The{" "}
+            <code className="font-mono">FIELD_REPORTER_LLM_PROVIDER</code> env
+            var is set to <strong>{envProviderOverride}</strong> and overrides
+            this at runtime. Saving still records your choice for when the env
+            var is removed.
+          </p>
+        )}
+      </div>
+
+      {/* Per-provider model ids */}
+      <div>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          Model per provider
+        </h2>
+        <p className="mt-1 text-xs text-slate-500">
+          Pick the model each provider uses. Choose &ldquo;Custom model ID&rdquo;
+          to enter one not in the list.
+        </p>
+        <div className="mt-2 space-y-3">
+          {FIELD_REPORTER_PROVIDERS.map((p) => (
+            <ModelField
+              key={p}
+              provider={p}
+              label={PROVIDER_LABELS[p]}
+              cost={PROVIDER_COST_CLASS[p]}
+              value={settings.models[p]}
+              onChange={(value) => setModel(p, value)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Generation defaults */}
+      <div>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          Generation defaults
+        </h2>
+        <p className="mt-1 text-xs text-slate-500">
+          Applied when a node does not specify its own value.
+        </p>
+        <div className="mt-2 grid grid-cols-2 gap-3">
+          <label className="block">
+            <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+              Temperature (0–2)
+            </span>
+            <input
+              type="number"
+              min={0}
+              max={2}
+              step={0.1}
+              value={settings.temperature}
+              onChange={(e) => patch({ temperature: Number(e.target.value) })}
+              className={`mt-1 ${FIELD_CLASS}`}
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+              Max tokens (64–8192)
+            </span>
+            <input
+              type="number"
+              min={64}
+              max={8192}
+              step={64}
+              value={settings.maxTokens}
+              onChange={(e) => patch({ maxTokens: Number(e.target.value) })}
+              className={`mt-1 ${FIELD_CLASS}`}
+            />
+          </label>
+        </div>
+      </div>
+
+      {/* Tracing */}
+      <div>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          LangSmith tracing
+        </h2>
+        <label className="mt-2 flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={settings.tracingEnabled}
+            onChange={(e) => patch({ tracingEnabled: e.target.checked })}
+          />
+          Trace runs to LangSmith
+        </label>
+        {!hasLangsmithKey && (
+          <p className="mt-2 rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+            No <code className="font-mono">LANGSMITH_API_KEY</code> is
+            configured, so tracing stays off regardless of this toggle.
+          </p>
+        )}
+      </div>
+
+      {/* Save */}
+      <div className="flex items-center gap-3 border-t border-slate-200 pt-4 dark:border-slate-800">
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={status.kind === "saving"}
+          className="rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {status.kind === "saving" ? "Saving…" : "Save settings"}
+        </button>
+        {status.kind === "saved" && (
+          <span role="status" className="text-sm text-emerald-700 dark:text-emerald-400">
+            Saved.
+          </span>
+        )}
+        {status.kind === "error" && (
+          <span role="alert" className="text-sm text-red-700 dark:text-red-400">
+            {status.message}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** One provider's model picker: dropdown + custom-ID escape hatch. */
+function ModelField({
+  provider,
+  label,
+  cost,
+  value,
+  onChange,
+}: {
+  provider: LlmProvider;
+  label: string;
+  cost: "free" | "paid";
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const options = MODEL_OPTIONS[provider];
+  const isCustom = !options.some((option) => option.id === value);
+
+  return (
+    <div>
+      <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+        {label}{" "}
+        <span
+          className={
+            "font-normal " +
+            (cost === "free"
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-amber-600 dark:text-amber-400")
+          }
+        >
+          · {cost === "free" ? "Free" : "Paid"}
+        </span>
+      </span>
+      <select
+        value={isCustom ? CUSTOM : value}
+        onChange={(e) =>
+          onChange(e.target.value === CUSTOM ? "" : e.target.value)
+        }
+        className={`mt-1 ${FIELD_CLASS}`}
+        aria-label={`${label} model`}
+      >
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.label}
+          </option>
+        ))}
+        <option value={CUSTOM}>Custom model ID…</option>
+      </select>
+      {isCustom && (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Exact model ID"
+          aria-label={`${label} custom model ID`}
+          className={`mt-2 font-mono ${FIELD_CLASS}`}
+        />
+      )}
+    </div>
+  );
+}

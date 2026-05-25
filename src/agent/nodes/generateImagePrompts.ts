@@ -7,7 +7,7 @@
  * Pure and fail-soft.
  */
 import { ImagePromptsSchema } from "../schemas";
-import { getChatModel } from "../llm";
+import { buildChatModelWithFallback } from "../with-fallback";
 import type { FieldReportState, FieldReportStateUpdate } from "../state";
 
 const SYSTEM_PROMPT = `You write prompts for an image generator. Given a finished \
@@ -25,10 +25,12 @@ export async function generateImagePrompts(
   }
 
   try {
-    const model = getChatModel({
-      provider: state.llmProvider,
-      temperature: 0.7,
-    }).withStructuredOutput(ImagePromptsSchema, { name: "generate_image_prompts" });
+    const model = (
+      await buildChatModelWithFallback({
+        provider: state.llmProvider,
+        temperature: 0.7,
+      })
+    ).withStructuredOutput(ImagePromptsSchema, { name: "generate_image_prompts" });
     const { prompts } = await model.invoke([
       ["system", SYSTEM_PROMPT],
       ["human", `Lesson:\n\n${draft.markdown}`],

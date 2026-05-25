@@ -15,7 +15,7 @@
  */
 import { rubric, RUBRIC_CRITERIA, isPassing } from "../rubric";
 import { RubricScoresSchema, type RubricScores } from "../schemas";
-import { getChatModel } from "../llm";
+import { buildChatModelWithFallback } from "../with-fallback";
 import type { FieldReportState, FieldReportStateUpdate } from "../state";
 
 const SYSTEM_PROMPT = `You are a strict lesson reviewer for Wanderlearn. Score the \
@@ -70,10 +70,12 @@ export async function critique(
 
   let rubricScores: RubricScores;
   try {
-    const model = getChatModel({
-      provider: state.llmProvider,
-      temperature: 0,
-    }).withStructuredOutput(RubricScoresSchema, { name: "score_rubric" });
+    const model = (
+      await buildChatModelWithFallback({
+        provider: state.llmProvider,
+        temperature: 0,
+      })
+    ).withStructuredOutput(RubricScoresSchema, { name: "score_rubric" });
     rubricScores = (await model.invoke([
       ["system", SYSTEM_PROMPT],
       [
