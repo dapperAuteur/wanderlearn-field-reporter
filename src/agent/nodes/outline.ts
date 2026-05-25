@@ -5,7 +5,7 @@
  * numbered objective via `tiesToObjective`. Pure and fail-soft.
  */
 import { OutlineSchema } from "../schemas";
-import { getChatModel } from "../llm";
+import { buildChatModelWithFallback } from "../with-fallback";
 import type { FieldReportState, FieldReportStateUpdate } from "../state";
 
 const SYSTEM_PROMPT = `You are an instructional designer for Wanderlearn. Given \
@@ -37,10 +37,12 @@ export async function outline(
   ].join("\n");
 
   try {
-    const model = getChatModel({
-      provider: state.llmProvider,
-      temperature: 0.4,
-    }).withStructuredOutput(OutlineSchema, { name: "draft_outline" });
+    const model = (
+      await buildChatModelWithFallback({
+        provider: state.llmProvider,
+        temperature: 0.4,
+      })
+    ).withStructuredOutput(OutlineSchema, { name: "draft_outline" });
     const outline = await model.invoke([
       ["system", SYSTEM_PROMPT],
       ["human", userMessage],

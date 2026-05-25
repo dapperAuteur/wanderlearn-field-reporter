@@ -11,6 +11,7 @@ import {
   uuid,
   text,
   numeric,
+  real,
   timestamp,
   jsonb,
   integer,
@@ -94,7 +95,29 @@ export const waitlistSignups = pgTable("waitlist_signups", {
     .defaultNow(),
 });
 
+/**
+ * Runtime LLM configuration — the per-provider model id the agent uses, plus
+ * generation defaults and a tracing toggle. Edited from the `/admin`
+ * dashboard. Always one row keyed `id = "singleton"`.
+ *
+ * `models` is `jsonb` holding `Record<LlmProvider, string>` — one model id
+ * per provider. Slots an operator hasn't set fall back to
+ * `DEFAULT_MODELS[provider]` in `agent/llm-config.ts`.
+ */
+export const appSettings = pgTable("app_settings", {
+  id: text("id").primaryKey().default("singleton"),
+  provider: text("provider").$type<LlmProvider>().notNull().default("anthropic"),
+  models: jsonb("models").$type<Partial<Record<LlmProvider, string>>>().notNull().default({}),
+  temperature: real("temperature").notNull().default(0.4),
+  maxTokens: integer("max_tokens").notNull().default(4096),
+  tracingEnabled: boolean("tracing_enabled").notNull().default(true),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export type FieldReport = typeof fieldReports.$inferSelect;
 export type FieldReportRevision = typeof fieldReportRevisions.$inferSelect;
 export type LoginToken = typeof loginTokens.$inferSelect;
 export type WaitlistSignup = typeof waitlistSignups.$inferSelect;
+export type AppSettingsRow = typeof appSettings.$inferSelect;

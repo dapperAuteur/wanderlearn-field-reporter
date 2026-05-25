@@ -15,7 +15,7 @@
  * call yields empty research — the graph never hard-crashes on a bad input.
  */
 import { ResearchSchema } from "../schemas";
-import { getChatModel } from "../llm";
+import { buildChatModelWithFallback } from "../with-fallback";
 import {
   webSearch,
   MAX_WEB_SEARCHES_PER_RUN,
@@ -86,10 +86,12 @@ export async function research(
   ].join("\n");
 
   try {
-    const model = getChatModel({
-      provider: state.llmProvider,
-      temperature: 0.3,
-    }).withStructuredOutput(ResearchSchema, { name: "extract_research" });
+    const model = (
+      await buildChatModelWithFallback({
+        provider: state.llmProvider,
+        temperature: 0.3,
+      })
+    ).withStructuredOutput(ResearchSchema, { name: "extract_research" });
     const research = await model.invoke([
       ["system", SYSTEM_PROMPT],
       ["human", userMessage],

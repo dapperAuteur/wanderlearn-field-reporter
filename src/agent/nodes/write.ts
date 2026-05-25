@@ -8,7 +8,7 @@
  * the running counter. Pure and fail-soft.
  */
 import { WriteOutputSchema } from "../schemas";
-import { getChatModel } from "../llm";
+import { buildChatModelWithFallback } from "../with-fallback";
 import type { FieldReportState, FieldReportStateUpdate } from "../state";
 
 const SYSTEM_PROMPT = `You are a lesson writer for Wanderlearn. Using the outline \
@@ -60,11 +60,13 @@ export async function write(
   ].join("\n");
 
   try {
-    const model = getChatModel({
-      provider: state.llmProvider,
-      temperature: 0.5,
-      maxTokens: 8192,
-    }).withStructuredOutput(WriteOutputSchema, { name: "write_lesson" });
+    const model = (
+      await buildChatModelWithFallback({
+        provider: state.llmProvider,
+        temperature: 0.5,
+        maxTokens: 8192,
+      })
+    ).withStructuredOutput(WriteOutputSchema, { name: "write_lesson" });
     const output = await model.invoke([
       ["system", SYSTEM_PROMPT],
       ["human", userMessage],

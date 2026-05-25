@@ -12,6 +12,7 @@ import {
 import type { FieldReportState } from "@/agent/state";
 import { saveFieldReport } from "@/lib/reports";
 import { requireApiUser } from "@/lib/auth/dal";
+import { getStoredSettings } from "@/lib/settings";
 
 // The graph runs several LLM-touching nodes synchronously.
 export const runtime = "nodejs";
@@ -59,7 +60,14 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   const reportId = randomUUID();
   const langsmithRunId = randomUUID();
-  const llmProvider = resolveProvider(parsed.data.llmProvider);
+  // Priority: request body (operator pick) > admin default (settings) >
+  // env auto-detect. `resolveProvider` covers the bottom two when the body
+  // omits a value; `getStoredSettings()` carries the dashboard's stored
+  // default that the env-only `resolveProvider` doesn't know about.
+  const settings = await getStoredSettings();
+  const llmProvider = resolveProvider(
+    parsed.data.llmProvider ?? settings.provider,
+  );
 
   try {
     const graph = getCompiledFieldReportGraph();

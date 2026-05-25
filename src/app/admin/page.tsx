@@ -31,7 +31,17 @@ export default async function AdminPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="text-2xl font-semibold tracking-tight">Waitlist</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">Waitlist</h1>
+        <nav className="flex shrink-0 items-center gap-3 text-xs">
+          <a
+            href="/admin/models"
+            className="text-sky-700 hover:underline dark:text-sky-400"
+          >
+            Model configuration →
+          </a>
+        </nav>
+      </div>
 
       <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
         <span className="font-semibold text-slate-900 dark:text-slate-100">
