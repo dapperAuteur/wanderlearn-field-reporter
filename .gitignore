@@ -44,3 +44,11 @@ next-env.d.ts
 # local working notes / Claude Code state (WitUS ecosystem rule)
 /plans
 .claude/
+
+docs/lessons/01-reflection-loops.pdf
+
+docs/lessons/02-writing-rubrics.pdf
+
+docs/lessons/03-langsmith-evals.pdf
+
+docs/lessons/04-termination.pdf
