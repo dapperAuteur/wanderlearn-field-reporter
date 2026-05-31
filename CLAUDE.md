@@ -141,3 +141,9 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
   single-user magic-link sign-in (jose JWT session, single-use token, Mailgun
   HTTP API). Adds the `login_tokens` table (migration `0002`). Needs the auth
   env vars from `plans/user-tasks/05-provision-auth-mailgun.md`. Done.
+
+---
+
+## Plans convention
+
+All implementation plans live in `./plans/` as markdown named `NN-description-of-plan.md` — two-digit numeric prefix, kebab-case slug, next available number, don't skip. Sub-queues: `./plans/user-tasks/NN-slug.md` (operator tasks), `./plans/bugs/`, `./plans/future/`. (`plans/` is typically gitignored — local working notes.) Full rule: `gemini/witus/CLAUDE.md` §"Plans convention".
