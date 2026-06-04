@@ -79,6 +79,24 @@ engineering notes. Full rule: `gemini/witus/CLAUDE.md`.
 
 ---
 
+## Documentation-currency rule
+
+User-facing docs must not drift from the app. **Any change to app behavior — a new
+or changed route, a change to the auth/public surface (`isPublic()` in
+`src/proxy.ts`), the capture/generate/review flow, providers, env vars, or the
+`/admin` surface — must update the user docs in the same PR.** The two user docs
+are the in-app onboarding page [`src/app/help/page.tsx`](src/app/help/page.tsx)
+(written for visitors, lesson-creators, and operators — no dev knowledge assumed)
+and the `README.md` (the engineering reference). When you touch `src/app/**` routes
+or `src/proxy.ts`, re-read `/help` and the README and reconcile them before
+committing. New top-level user-facing routes should also be linked from `/help`.
+
+(This is an advisory rule enforced in review, not a hook. If drift becomes a
+recurring problem, add a pre-commit check that flags PRs touching `src/app/**`
+without touching `src/app/help/` or `README.md`.)
+
+---
+
 ## Project specifics
 
 - **Stack:** Next.js 16 (app router, `src/`), TypeScript strict, Tailwind v4,

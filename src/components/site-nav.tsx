@@ -26,6 +26,7 @@ export async function SiteNav() {
         </Link>
         <div className="flex flex-wrap items-center gap-1">
           <NavLink href="/field-report">Field reports</NavLink>
+          <NavLink href="/help">Help</NavLink>
           {currentUser ? (
             <>
               <NavLink href="/field-report/new">New capture</NavLink>
