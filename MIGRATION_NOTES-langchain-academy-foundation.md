@@ -5,9 +5,23 @@
 > lives in its own file.
 
 **Course:** Foundation: Reflection-Loop Reliability
-**Shipped so far:** **Module 0** (setup + reflection-loop primitive) and **Module 1**
-(bounded termination). Modules 2–6 + capstone remain, outlined in
-`docs/course/README.md`.
+**Shipped so far:** **Module 0** (setup + reflection-loop primitive), **Module 1**
+(bounded termination), **Module 2** (critique design). Modules 3–6 + capstone remain,
+outlined in `docs/course/README.md`.
+
+### Module 2 — Critique design (branch `feat/langchain-academy-foundation-module-2`, off Module 1)
+- `docs/course/module-2-critique-design/` — README, lessons `13`–`18`,
+  `module-2-lab/quiz/feedback`, and `video/13…18-*.video-script.md`.
+- `examples/support-reply-loop/rubric.ts` — rubric as DATA; `CriterionVerdictSchema`
+  (evidence + suggestion required, Zod); `applyPassRule` (all-blocking /
+  weighted-threshold); `findCompoundCriteria` (failure-mode-3 linter);
+  `buildRubricReplyLoop` (rubric critic in Module 1's bounded loop).
+- `tests/course/module-2-critique.test.ts` — 10 tests, deterministic/offline (a fake
+  judge stands in for the LLM): schema enforcement, pass-rule-as-data, weight changes,
+  the linter, and loop integration.
+- Tag `course/module-2`. typecheck + lint + course tests (21 across M0–M2) green.
+- **Merge note:** branched off the Module 1 tip; Module 1 is already merged to `main`,
+  so this applies cleanly on top.
 
 ### Module 1 — Bounded termination (branch `feat/langchain-academy-foundation-module-1`)
 - `docs/course/module-1-termination/` — README, lessons `07`–`12`, `module-1-lab/quiz/feedback`,
