@@ -11,6 +11,11 @@ Part of the WitUS ecosystem; a sibling of
 
 **Live:** <https://wanderlearn.field.reporter.witus.online>
 
+**New here?** The in-app [`/help`](src/app/help/page.tsx) page onboards three
+readers — visitors browsing reports, people creating lessons, and operators
+running the app — without needing this README. This README is the deeper
+engineering reference.
+
 ## The agent
 
 ```
