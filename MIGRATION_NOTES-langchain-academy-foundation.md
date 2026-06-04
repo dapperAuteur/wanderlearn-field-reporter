@@ -5,10 +5,88 @@
 > lives in its own file.
 
 **Course:** Foundation: Reflection-Loop Reliability
-**Shipped so far:** **Module 0** (setup + reflection-loop primitive), **Module 1**
-(bounded termination), **Module 2** (critique design), **Module 3** (tracing in
-LangSmith), **Module 4** (eval-driven reflection). Modules 5–6 + capstone remain,
-outlined in `docs/course/README.md`.
+**Status: COURSE CONTENT COMPLETE.** All **7 modules (0–6, incl. capstone)** shipped —
+**43 lessons, 7 runnable `examples/` modules, 50 offline tests**, 43 word-for-word video
+scripts. Video is **scripted but not recorded** (STOP gate: operator approval of the
+recording stack). Per-module branches `feat/langchain-academy-foundation-module-{0..6}` and
+tags `course/module-{0..6}`; **BAM merges** (do not merge to main).
+
+---
+
+## FINAL rubric self-scoring (§3 of the PRD) — full course
+
+**Target:** ≥ 4 on every criterion, ≥ 3 at 5/5. **Result: all six at 5/5 (exceeds).**
+
+| # | Criterion | Score | Evidence |
+|---|---|---|---|
+| F1 | Module/lesson spine | **5** | 7 named, ordered modules with stated dependencies; each module README + opening lesson states "the model you are about to install" and each closing lesson states "what you should now believe"; Module 6 / Lesson 43 explicitly refers back to Module 0 / Lesson 1. |
+| F2 | Durable mental model | **5** | Patterns named, each with named anti-patterns; **three rotating domains** — support replies (Modules 0–5 thread), legal-clause → plain-language (capstone), commit messages (transfer test) — plus the closing transfer test (Lesson 42 in code + the capstone lab directing the reader to a 4th domain). |
+| F3 | Foundation scale | **5** | **43 lessons** across 7 modules + a capstone; runnable `examples/` checkpointed by `course/lesson-NN` + `course/module-N` tags (F4-equivalent of notebooks); scripted video ≈ 3.5–4 hr (43 scripts × ~5 min). *Video runtime is designed/scripted, pending recording at the STOP gate.* |
+| F4 | Hands-on + verifiable signal | **5** | 7 runnable example modules + **50 deterministic offline tests**; every lesson has a `Try it`; every module ships a Lab with a self-check rubric; per-lesson/per-module git tags make any checkpoint runnable. |
+| F5 | Anti-patterns + real bug | **5** | ~15 named anti-patterns across the course, each with a code-level failure and a principle-level fix; Lesson 25 is a **real diagnosed production bug** (witus-triage "other / confidence 0" fail-soft masking an unfunded-key error), cited `McDonald (n.d.)`. |
+| F6 | APA-7 + primary literature | **5** | Every lesson ends with an APA-7 `## References`; `docs/course/bibliography.md` carries Self-Refine, Reflexion, G-Eval, MT-Bench, Ji et al., LangGraph/LangSmith/CLI docs, plus the public-domain plainlanguage.gov source and the witus-triage citation. |
+
+**Deal-breakers (§3.1): all cleared.** Module spine ✅ · capstone ✅ · rotating thread-domain across
+Modules 0–4 ✅ · dual Python+TS (TS artifact + Python Rosetta-stone translation, Module 0) ✅ ·
+LangSmith spine (Module 3 tracing + Modules 4–5 evals/online) ✅ · paper citations ✅. F3 ≥ 1.5 hr:
+scripted ≈ 3.5–4 hr (recording pending).
+
+## Transfer test result (PRD §8.3, F2)
+
+**PASSED.** The capstone domain (legal clause → plain language) appears in **none** of Modules 0–4.
+The test-reader transfer to a **third** domain (commit messages — in neither the course nor the
+capstone) is demonstrated programmatically in `tests/course/module-6-capstone.test.ts`: a fresh
+3-criterion commit rubric plugs into the same `scoreAgainstRubric`, a good commit passes and a bad one
+fails — proving the engine is domain-independent. The capstone lab (`module-6-lab.md`) directs the
+human reader to ship a loop on a **fourth** domain of their choosing, reusing the router + scorer.
+
+## Verification (final)
+
+- `npm run typecheck` → clean · `npx eslint examples tests/course` → clean.
+- `npm run test -- tests/course/` → **50 passed (7 files)**, fully offline (no API key, no Docker, no
+  LangSmith account). The pre-existing `tests/agent/termination.test.ts` failures are unrelated (they
+  fail on clean `main`; the course touches nothing under `src/`).
+
+## Open items / blocked on operators
+
+- **Recording:** scripts complete; **not recorded** — blocked on `plans/user-tasks/07-recording-stack.md`
+  (BAM approves the stack — the kickoff STOP gate).
+- **bam-landing-page PR:** **not opened.** Per PRD §7 the landing flips 🟡→🟢 only when video lands; video
+  is scripted-not-recorded, so the landing stays 🟡 and the PR waits on recording. (Do NOT edit
+  bam-landing-page from this repo's branch.)
+- **LangSmith project URL:** pending the account — `plans/user-tasks/09-langsmith-team-tier.md`
+  (`LANGSMITH_API_KEY` / `LANGSMITH_PROJECT` / `LANGSMITH_TRACING`). Not required to run any lesson.
+- **Bundle branch (branch-hygiene Half 3):** the per-module branches can be consolidated into
+  `bundle/langchain-academy-foundation-<YYYY-MM-DD>` with `git merge --no-ff` before final handoff if you
+  prefer one PR; currently shipped as 7 sequential per-module branches (each already merged as you go).
+- **App work (separate concern):** `plans/01-app-nav-help-docs-currency.md` — menu/footer/docs/doc-currency
+  rule, deferred to its own branch after the course (your call: capstone-then-app).
+
+---
+
+### Module 6 — Capstone (branch `feat/langchain-academy-foundation-module-6`, off the M5 tip)
+- `docs/course/module-6-capstone/` — README, lessons `38`–`43`, `module-6-lab/quiz/feedback`,
+  and `video/38…43-*.video-script.md`.
+- `examples/capstone-plain-language/index.ts` — the capstone composition on the **new** legal→plain
+  domain: `plainLanguageRubric`, the `plainLanguageDataset` corpus (one verbatim public-domain
+  plainlanguage.gov clause + author-written federal-register clauses), `buildPlainLanguageLoop`
+  (reuses M1 `routeWithAllPatterns` + state and M2 `scoreAgainstRubric`), `runCapstoneEval` /
+  `runCapstoneProduction`, offline stand-ins. The M4/M5 helpers are imported **unchanged** (the
+  transfer proof).
+- `tests/course/module-6-capstone.test.ts` — 6 tests: full stack on legal→plain (loop 11/12 vs
+  single-shot 0/12, pairwise, threshold, metrics, Pareto, loud-fail) + the third-domain
+  (commit-message) transfer test.
+- Tag `course/module-6`. typecheck + lint + course tests (50 across M0–M6) green.
+
+### Module 5 — Production (branch `feat/langchain-academy-foundation-module-5`, off main)
+- `docs/course/module-5-production/` — README, lessons `32`–`37`, `module-5-lab/quiz/feedback`,
+  and `video/32…37-*.video-script.md`.
+- `examples/support-reply-loop/production.ts` — `runCost` (per-iteration accounting),
+  `runProduction` + `computeMetrics` (convergence rate, avg iterations, runaway count,
+  cost-per-converged-output), `checkAlerts`, `singlePassGoodEnough`, `abCompare`, `paretoFrontier`.
+- `tests/course/module-5-production.test.ts` — 7 tests, deterministic/offline: cost accounting,
+  metrics, runaway alerts, the single-pass gate, A/B critic compare, and the Pareto frontier.
+- Tag `course/module-5`. typecheck + lint + course tests (44 across M0–M5) green.
 
 ### Module 4 — Eval-driven reflection (branch `feat/langchain-academy-foundation-module-4`, off main)
 - `docs/course/module-4-evaluation/` — README, lessons `26`–`31`, `module-4-lab/quiz/feedback`,

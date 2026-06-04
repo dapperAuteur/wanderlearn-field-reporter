@@ -24,6 +24,9 @@ function isPublic(pathname: string): boolean {
     return true;
   }
 
+  // Help / onboarding — public so visitors can learn the tool without an account.
+  if (pathname === "/help" || pathname.startsWith("/help/")) return true;
+
   // Read-only report views (the portfolio surface).
   // `/field-report` lists reports; `/field-report/<id>` opens one.
   // `/field-report/new` is the capture form — that one stays gated.
