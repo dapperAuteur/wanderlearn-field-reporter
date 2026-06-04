@@ -5,10 +5,19 @@
 > lives in its own file.
 
 **Course:** Foundation: Reflection-Loop Reliability
-**Shipped so far:** **Module 0** (setup + reflection-loop primitive), **Module 1**
-(bounded termination), **Module 2** (critique design), **Module 3** (tracing in
-LangSmith), **Module 4** (eval-driven reflection). Modules 5–6 + capstone remain,
-outlined in `docs/course/README.md`.
+**Shipped so far:** **Modules 0–5** — setup, bounded termination, critique design,
+tracing, eval-driven reflection, and production. **Module 6 (capstone, new domain)** is the
+only module remaining, outlined in `docs/course/README.md`.
+
+### Module 5 — Production (branch `feat/langchain-academy-foundation-module-5`, off main)
+- `docs/course/module-5-production/` — README, lessons `32`–`37`, `module-5-lab/quiz/feedback`,
+  and `video/32…37-*.video-script.md`.
+- `examples/support-reply-loop/production.ts` — `runCost` (per-iteration accounting),
+  `runProduction` + `computeMetrics` (convergence rate, avg iterations, runaway count,
+  cost-per-converged-output), `checkAlerts`, `singlePassGoodEnough`, `abCompare`, `paretoFrontier`.
+- `tests/course/module-5-production.test.ts` — 7 tests, deterministic/offline: cost accounting,
+  metrics, runaway alerts, the single-pass gate, A/B critic compare, and the Pareto frontier.
+- Tag `course/module-5`. typecheck + lint + course tests (44 across M0–M5) green.
 
 ### Module 4 — Eval-driven reflection (branch `feat/langchain-academy-foundation-module-4`, off main)
 - `docs/course/module-4-evaluation/` — README, lessons `26`–`31`, `module-4-lab/quiz/feedback`,
