@@ -6,8 +6,8 @@ reflection loops, self-critique, or bounded termination as a named topic. This
 one does, taught on a rotating example domain so the pattern transfers and you
 leave with a durable mental model you can redeploy without the notes.
 
-> **Status:** 🟡 In progress. **Modules 0–2 shipped** (setup · bounded termination ·
-> critique design). Modules 3–6 are outlined below and land over the following weeks.
+> **Status:** 🟡 In progress. **Modules 0–3 shipped** (setup · bounded termination ·
+> critique design · tracing). Modules 4–6 are outlined below and land over the following weeks.
 
 ---
 
