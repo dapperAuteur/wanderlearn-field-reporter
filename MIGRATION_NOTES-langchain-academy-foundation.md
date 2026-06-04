@@ -5,10 +5,23 @@
 > lives in its own file.
 
 **Course:** Foundation: Reflection-Loop Reliability
-**This increment:** **Module 0 pilot, end-to-end** — the production format proven on
-one module before scaling to 24 lessons. Branch:
-`feat/langchain-academy-foundation-module-0`. Modules 1–6 are outlined in
-`docs/course/README.md` and land in later sessions.
+**Shipped so far:** **Module 0** (setup + reflection-loop primitive) and **Module 1**
+(bounded termination). Modules 2–6 + capstone remain, outlined in
+`docs/course/README.md`.
+
+### Module 1 — Bounded termination (branch `feat/langchain-academy-foundation-module-1`)
+- `docs/course/module-1-termination/` — README, lessons `07`–`12`, `module-1-lab/quiz/feedback`,
+  and `video/07…12-*.video-script.md`.
+- `examples/support-reply-loop/termination.ts` — `buildBoundedReplyLoop` (counter +
+  convergence + escalation composed in priority order), `buildUncappedReplyLoop`
+  (the `recursionLimit` backstop demo), `hasConverged`.
+- `tests/course/module-1-termination.test.ts` — 7 tests, deterministic/offline:
+  each termination pattern isolated, plus the recursionLimit throw.
+- Tag `course/module-1`. typecheck + lint + course tests (11) green.
+
+---
+
+### Module 0 (below) — pilot, branch `feat/langchain-academy-foundation-module-0` (merged)
 
 ---
 
