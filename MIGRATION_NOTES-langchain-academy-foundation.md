@@ -6,8 +6,23 @@
 
 **Course:** Foundation: Reflection-Loop Reliability
 **Shipped so far:** **Module 0** (setup + reflection-loop primitive), **Module 1**
-(bounded termination), **Module 2** (critique design). Modules 3–6 + capstone remain,
-outlined in `docs/course/README.md`.
+(bounded termination), **Module 2** (critique design), **Module 3** (tracing in
+LangSmith). Modules 4–6 + capstone remain, outlined in `docs/course/README.md`.
+
+### Module 3 — Tracing in LangSmith (branch `feat/langchain-academy-foundation-module-3`, off main)
+- `docs/course/module-3-tracing/` — README, lessons `19`–`25` (7 lessons),
+  `module-3-lab/quiz/feedback`, and `video/19…25-*.video-script.md`.
+- `examples/support-reply-loop/tracing.ts` — fail-soft `tracingConfig`/`isTracingEnabled`
+  (3 LangSmith env vars), `buildTracedReplyLoop` (records a local `RunTrace`), and
+  diagnostics `findWastedIterations`, `detectCriticDrift`, `didNotConverge`,
+  `detectFailSoftMasking`.
+- `tests/course/module-3-tracing.test.ts` — 8 tests, deterministic/offline (no LangSmith
+  account): fail-soft config, trace recording, each diagnosis, and the fail-soft-masking bug.
+- **F5 = 5 lesson:** Lesson 25 is the REAL witus-triage "other / confidence 0" production
+  bug (fail-soft `classify` node masking an unfunded-key error; the trace carried the real
+  error; it also poisoned the eval into a fake 8%). Cited APA-7 as `McDonald (n.d.)` from the
+  witus-triage repo README + `plans/01-fix-accuracy-eval.md`.
+- Tag `course/module-3`. typecheck + lint + course tests (29 across M0–M3) green.
 
 ### Module 2 — Critique design (branch `feat/langchain-academy-foundation-module-2`, off Module 1)
 - `docs/course/module-2-critique-design/` — README, lessons `13`–`18`,
