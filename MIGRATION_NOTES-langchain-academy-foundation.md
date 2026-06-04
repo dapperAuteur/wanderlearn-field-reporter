@@ -7,7 +7,20 @@
 **Course:** Foundation: Reflection-Loop Reliability
 **Shipped so far:** **Module 0** (setup + reflection-loop primitive), **Module 1**
 (bounded termination), **Module 2** (critique design), **Module 3** (tracing in
-LangSmith). Modules 4–6 + capstone remain, outlined in `docs/course/README.md`.
+LangSmith), **Module 4** (eval-driven reflection). Modules 5–6 + capstone remain,
+outlined in `docs/course/README.md`.
+
+### Module 4 — Eval-driven reflection (branch `feat/langchain-academy-foundation-module-4`, off main)
+- `docs/course/module-4-evaluation/` — README, lessons `26`–`31`, `module-4-lab/quiz/feedback`,
+  and `video/26…31-*.video-script.md`.
+- `examples/support-reply-loop/eval.ts` — reuses the runtime rubric as the eval: 10-example
+  `supportReplyDataset`, `evaluateDraft` (wraps `scoreAgainstRubric`), `runEval`, `pairwise`,
+  `meetsThreshold` (margin-aware), `assertNoInfraErrors` (loud-fail on the error-fallback
+  signature — the witus-triage "fake 8%" guard), plus deterministic offline stand-ins.
+- `tests/course/module-4-evaluation.test.ts` — 8 tests, deterministic/offline: rubric reuse,
+  loop 9/10 vs single-shot 0/10, pairwise, margin threshold, a caught regression, and the
+  loud-fail guard. Loop target uses Module 2's `buildRubricReplyLoop`.
+- Tag `course/module-4`. typecheck + lint + course tests (37 across M0–M4) green.
 
 ### Module 3 — Tracing in LangSmith (branch `feat/langchain-academy-foundation-module-3`, off main)
 - `docs/course/module-3-tracing/` — README, lessons `19`–`25` (7 lessons),
