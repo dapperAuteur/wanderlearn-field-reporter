@@ -68,6 +68,22 @@ const EnvSchema = z.object({
   /** Mailgun private API key — used for HTTP Basic auth against the API. */
   MAILGUN_API_KEY: z.string().min(1).optional(),
 
+  /* --- WitUS SSO — "Sign in with WitUS" ecosystem OIDC (code flow) --------- */
+  /** OIDC client id issued for this app by the WitUS IdP. When set, the
+   *  "Sign in with WitUS" button appears on /signin. */
+  WITUS_OIDC_CLIENT_ID: z.string().min(1).optional(),
+  /** OIDC client secret for the confidential token exchange. */
+  WITUS_OIDC_CLIENT_SECRET: z.string().min(1).optional(),
+  /** Optional endpoint overrides; each defaults to the accounts.witus.online
+   *  `/api/idp/oauth2/*` route in the route handlers. */
+  WITUS_OIDC_AUTHORIZE_URL: z.string().url().optional(),
+  WITUS_OIDC_TOKEN_URL: z.string().url().optional(),
+  WITUS_OIDC_USERINFO_URL: z.string().url().optional(),
+  /** Canonical public origin, e.g. `https://field-reporter.witus.online`. Used
+   *  to build the OIDC redirect_uri so it matches what the IdP has registered;
+   *  falls back to the request origin when unset. */
+  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+
   /* --- WitUS Inbox — triage queue receiver for waitlist signups ----------- */
   /** Inbox webhook endpoint, e.g. `https://inbox.witus.online/api/ingest`. */
   INBOX_INGEST_URL: z.string().min(1).optional(),
