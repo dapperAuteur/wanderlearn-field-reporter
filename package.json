@@ -28,6 +28,7 @@
     "@langchain/ollama": "^1.2.7",
     "@langchain/openai": "^1.4.7",
     "@neondatabase/serverless": "^1.1.0",
+    "@sentry/nextjs": "^10.69.0",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.10.0",
     "clsx": "^2.1.1",

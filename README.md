@@ -55,11 +55,47 @@ Non-admins who reach the sign-in screen can join a waitlist instead of being
 turned away; signups are reviewed in the `/admin` dashboard and forwarded to
 WitUS Inbox. A persistent global navigation header ties the console together.
 
+## Error monitoring
+
+Crash reporting goes to [Better Stack](https://betterstack.com), which ingests
+the `@sentry/nextjs` SDK format (so the code, the config files, and the env var
+names are the Sentry ones; only the DSN is Better Stack's). Wiring lives in
+`sentry.server.config.ts`, `sentry.edge.config.ts`,
+[`src/instrumentation.ts`](src/instrumentation.ts),
+[`src/instrumentation-client.ts`](src/instrumentation-client.ts), and the root
+boundary [`src/app/global-error.tsx`](src/app/global-error.tsx).
+
+**It is inert until a DSN is set.** With no `SENTRY_DSN` /
+`NEXT_PUBLIC_SENTRY_DSN`, `init()` is never called: nothing is sent and nothing
+changes for a visitor. Errors only, no tracing (LangSmith already owns run-level
+observability here) and no session replay.
+
+Every event passes through [`src/lib/sentry-scrub.ts`](src/lib/sentry-scrub.ts)
+first, which matters more in an LLM app than a CRUD one:
+
+- **Provider keys are matched by shape, not just by field name** (Anthropic,
+  OpenAI, OpenRouter, Cerebras, Google, LangSmith, Tavily, Mailgun, bare JWTs,
+  `Bearer` values, and `user:password@host` pairs inside connection URLs),
+  because a failing SDK stringifies its request and the key rides along
+  unlabelled.
+- **Prompts, model responses, and captures are dropped, not redacted.** A
+  capture is a human transcript of a real place; it is user content, and no crash
+  is fixed by reading it. Payload fields go wholesale, stack-frame locals are
+  deleted, and free text we keep is capped so an 8k-token draft cannot ride
+  inside an error message.
+- Cookies, auth headers, `query_string` (a separate field from `url`, and the one
+  that carries `?token=` and `?code=`), and the operator's email/IP are stripped.
+
+`tests/lib/sentry-scrub.test.ts` asserts on the serialised event and includes
+counter-assertions against over-redaction, because a report that hides the route,
+the provider, and the status code is a report nobody debugs from.
+
 ## Stack
 
 Next.js 16 · TypeScript (strict) · Tailwind v4 · shadcn/ui ·
 `@langchain/langgraph` · `@langchain/anthropic` + `@langchain/google-genai` ·
-Drizzle ORM + Neon Postgres · LangSmith · Vitest · Node 20+.
+Drizzle ORM + Neon Postgres · LangSmith · Better Stack (`@sentry/nextjs` SDK) ·
+Vitest · Node 20+.
 
 ## Quick start
 
@@ -118,7 +154,9 @@ taught on a different sample domain so the patterns transfer:
 ## Environment
 
 Every variable is documented in [`.env.example`](.env.example). LangSmith
-tracing is on by default; the app runs fine without `LANGSMITH_API_KEY`.
+tracing is on by default; the app runs fine without `LANGSMITH_API_KEY`. Error
+monitoring is off until `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` hold a Better
+Stack DSN (see `plans/user-tasks/12-betterstack-error-monitoring-dsn.md`).
 
 ## License
 

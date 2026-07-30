@@ -95,6 +95,17 @@ it. Favicons are the WitUS brand package, variant `01-orbit`, copied into
 - **Day 7:** polish — `react-markdown` rendering of lesson drafts and the final
   lesson in the report viewer — and ship. The 7-day build plan is complete; the
   agent is deployed and the repo is the portfolio piece. Done.
+- **Post-launch:** error monitoring via Better Stack, which ingests the
+  `@sentry/nextjs` SDK (so the config files and env var names are the Sentry
+  ones, only the DSN is Better Stack's). Inert until `SENTRY_DSN` /
+  `NEXT_PUBLIC_SENTRY_DSN` are set (`plans/user-tasks/12-*`). Errors only, no
+  tracing (LangSmith owns run observability) and no replay. `beforeSend` runs
+  `src/lib/sentry-scrub.ts`: provider keys are matched **by shape** because a
+  failing LLM SDK leaks them unlabelled, and **prompts, model responses, and
+  capture transcripts are dropped rather than redacted** since they are user
+  content and no crash is fixed by reading them. Changing that file means
+  updating `tests/lib/sentry-scrub.test.ts`, which asserts on the serialised
+  event and counter-asserts against over-redaction. Done.
 - **Post-launch:** email-link auth — `src/proxy.ts` gates the whole app,
   single-user magic-link sign-in (jose JWT session, single-use token, Mailgun
   HTTP API). Adds the `login_tokens` table (migration `0002`). Needs the auth

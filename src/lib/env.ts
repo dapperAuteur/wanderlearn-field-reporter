@@ -84,6 +84,24 @@ const EnvSchema = z.object({
    *  falls back to the request origin when unset. */
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
 
+  /* --- Error monitoring (Better Stack, via the @sentry/nextjs SDK) --------- */
+  /* Documented here for completeness, but the Sentry configs read `process.env`
+   * DIRECTLY: they run inside Next's instrumentation hook before app code (and
+   * on the client, where this `server-only` module cannot be imported), and a
+   * monitoring config must never be able to throw on a validation error. */
+  /** Server + edge DSN. Unset means the SDK is never initialised (fully inert). */
+  SENTRY_DSN: z.string().min(1).optional(),
+  /** Browser DSN. Must be the `NEXT_PUBLIC_` one to be inlined for the client. */
+  NEXT_PUBLIC_SENTRY_DSN: z.string().min(1).optional(),
+  /** Environment label on reported events; defaults to `VERCEL_ENV` / `NODE_ENV`. */
+  SENTRY_ENVIRONMENT: z.string().min(1).optional(),
+  NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().min(1).optional(),
+  /** Build-time only, for source-map upload. Without these the build still
+   *  succeeds and you simply get minified stack traces. */
+  SENTRY_ORG: z.string().min(1).optional(),
+  SENTRY_PROJECT: z.string().min(1).optional(),
+  SENTRY_AUTH_TOKEN: z.string().min(1).optional(),
+
   /* --- WitUS Inbox — triage queue receiver for waitlist signups ----------- */
   /** Inbox webhook endpoint, e.g. `https://inbox.witus.online/api/ingest`. */
   INBOX_INGEST_URL: z.string().min(1).optional(),
