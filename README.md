@@ -90,6 +90,41 @@ first, which matters more in an LLM app than a CRUD one:
 counter-assertions against over-redaction, because a report that hides the route,
 the provider, and the status code is a report nobody debugs from.
 
+## Health check
+
+`GET /api/health` is the uptime-monitor target. **Point monitors here, not at
+`/`.** The homepage can serve a cached 200 from the CDN while the database
+behind the app is down, so a green check on `/` proves only that the CDN is up.
+
+```jsonc
+// 200
+{ "ok": true, "service": "wanderlearn-field-reporter",
+  "checks": { "database": "ok" }, "timestamp": "2026-07-31T00:00:00.000Z" }
+
+// 503
+{ "ok": false, "error": "dependency_unavailable" }
+```
+
+`HEAD /api/health` runs the same check and returns the same status with no body.
+Both are public, unauthenticated, and never cached (`force-dynamic`,
+`revalidate = 0`, `Cache-Control: no-store`).
+
+**What a 200 proves:** this deploy executed a server route handler, and Neon
+Postgres accepted a connection and answered `select 1` within 4 seconds.
+
+**What it does not prove:** nothing about the LLM providers. The route
+deliberately calls **no** provider or third-party API. A vendor outage is not
+this app's outage, every probe would cost money, and provider errors routinely
+carry the API key in their message. It also says nothing about whether an agent
+run would succeed, whether any provider key is present or valid, or whether the
+UI renders. It is a liveness and database probe, nothing more.
+
+The 503 body is a fixed token. The route's `catch` takes **no error binding**,
+so there is no error object in scope to serialize, and the failure log is the
+constant string `health: database probe failed`. Driver errors carry the full
+`user:password@host` connection string, so neither the response nor the log may
+ever contain one. `tests/api/health.test.ts` asserts this in both directions.
+
 ## Stack
 
 Next.js 16 · TypeScript (strict) · Tailwind v4 · shadcn/ui ·
