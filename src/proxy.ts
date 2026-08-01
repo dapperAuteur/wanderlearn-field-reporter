@@ -27,6 +27,10 @@ function isPublic(pathname: string): boolean {
   // Help / onboarding — public so visitors can learn the tool without an account.
   if (pathname === "/help" || pathname.startsWith("/help/")) return true;
 
+  // Uptime probe. Must be unauthenticated or every monitor check reads as a 401
+  // outage. It returns a fixed ok/error token and no detail, so it leaks nothing.
+  if (pathname === "/api/health") return true;
+
   // Read-only report views (the portfolio surface).
   // `/field-report` lists reports; `/field-report/<id>` opens one.
   // `/field-report/new` is the capture form — that one stays gated.
