@@ -33,7 +33,7 @@ export function SignInForm({ errorMessage }: { errorMessage?: string }) {
   if (waitState.status === "waitlisted") {
     return (
       <p className="rounded-md border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-200">
-        Thanks — you&apos;re on the list. We&apos;ll be in touch when this
+        Thanks, you&apos;re on the list. We&apos;ll be in touch when this
         becomes available as a product.
       </p>
     );
@@ -42,7 +42,7 @@ export function SignInForm({ errorMessage }: { errorMessage?: string }) {
   if (linkState.status === "link-sent") {
     return (
       <p className="rounded-md border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-200">
-        Check your inbox. A one-time sign-in link is on its way — it expires in
+        Check your inbox. A one-time sign-in link is on its way; it expires in
         15 minutes.
       </p>
     );
@@ -53,12 +53,12 @@ export function SignInForm({ errorMessage }: { errorMessage?: string }) {
       <div className="space-y-4">
         <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
           <p>
-            Sorry — this app is private right now and{" "}
+            Sorry, this app is private right now and{" "}
             <span className="font-mono text-xs">{linkState.email}</span>{" "}
             isn&apos;t an authorized address, so you can&apos;t use it yet.
           </p>
           <p className="mt-2">
-            Want to be notified — and join the early-paying waitlist — when
+            Want to be notified (and join the early-paying waitlist) when
             this becomes available as a product?
           </p>
         </div>

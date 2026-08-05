@@ -19,7 +19,7 @@ The agent researches the location with a web search tool, drafts an objectives-f
 This repo demonstrates three LangGraph patterns: reflection loops, rubric-as-eval, and bounded cyclic graphs.
 
 Companion 4-lesson course (Module 3 of the series): [livelongworkfree.com/course/reflection](https://livelongworkfree.com/course/reflection)
-Companion podcast (S1E2 — coming after S1E1): [livelongworkfree.com/podcast](https://livelongworkfree.com/podcast)
+Companion podcast (S1E2, coming after S1E1): [livelongworkfree.com/podcast](https://livelongworkfree.com/podcast)
 Sister projects in the same curriculum: [Triage Agent](https://github.com/dapperAuteur/witus-triage-agent), [Multi-Agent Coach](https://github.com/dapperAuteur/centenarian-coach-multiagent)
 
 ---
@@ -30,7 +30,7 @@ Wanderlearn captures 360° photo, 360° video, and drone footage at real locatio
 
 Turning raw captures into lessons is slow manual work. Research the location. Outline objectives. Write the script. Fact-check. Format. Hours per lesson. It is the bottleneck on course velocity, full stop.
 
-This agent automates the drafting half. It does not publish anything on its own — the operator still reviews the final markdown before it goes live — but it produces a high-quality draft on the first or second pass. The fixture in this repo is the MUCHO capture; swap in your own location data and the agent works the same way.
+This agent automates the drafting half. It does not publish anything on its own (the operator still reviews the final markdown before it goes live), but it produces a high-quality draft on the first or second pass. The fixture in this repo is the MUCHO capture; swap in your own location data and the agent works the same way.
 
 ---
 
@@ -158,10 +158,10 @@ If clone-to-first-lesson takes longer than 20 minutes, that is a bug. Open an is
 
 Four lessons under `/docs/lessons/`. Each is ~1,200 words plus inline code.
 
-- [Lesson 1 — Reflection Loops](./docs/lessons/01-reflection-loops.md). Why an agent that critiques itself outperforms an agent that does not.
-- [Lesson 2 — Writing Rubrics](./docs/lessons/02-writing-rubrics.md). Rubric criteria an LLM can actually score, with concrete evidence requirements.
-- [Lesson 3 — LangSmith Evals](./docs/lessons/03-langsmith-evals.md). Turning your rubric into a CI-runnable eval.
-- [Lesson 4 — Termination](./docs/lessons/04-termination.md). Bounded cyclic graphs, max-iteration counters, and graceful exits.
+- [Lesson 1: Reflection Loops](./docs/lessons/01-reflection-loops.md). Why an agent that critiques itself outperforms an agent that does not.
+- [Lesson 2: Writing Rubrics](./docs/lessons/02-writing-rubrics.md). Rubric criteria an LLM can actually score, with concrete evidence requirements.
+- [Lesson 3: LangSmith Evals](./docs/lessons/03-langsmith-evals.md). Turning your rubric into a CI-runnable eval.
+- [Lesson 4: Termination](./docs/lessons/04-termination.md). Bounded cyclic graphs, max-iteration counters, and graceful exits.
 
 Lessons use a different sample domain (drafting blog posts from interview notes) so the pattern transfers cleanly.
 
@@ -184,7 +184,7 @@ Lessons use a different sample domain (drafting blog posts from interview notes)
 | UI               | Tailwind v4, shadcn/ui                      |
 | Testing          | Vitest                                      |
 
-For a Gemini-stack version, see Appendix A in the PRD. Reflection loops are the highest-leverage swap of the three projects in this series because the loop multiplies LLM calls — Gemini Flash on the cheap nodes and Pro on the critic gives roughly 3x cost savings without sacrificing rubric adherence (if the critic is on Pro, not Flash).
+For a Gemini-stack version, see Appendix A in the PRD. Reflection loops are the highest-leverage swap of the three projects in this series because the loop multiplies LLM calls: Gemini Flash on the cheap nodes and Pro on the critic gives roughly 3x cost savings without sacrificing rubric adherence (if the critic is on Pro, not Flash).
 
 ---
 
@@ -254,7 +254,7 @@ The web search tool is capped at 5 calls per agent run (enforced as a node-level
 
 ```bash
 pnpm test                  # all tests
-pnpm test:critique         # 5 hand-graded drafts (2 pass, 3 fail) — must score 5/5
+pnpm test:critique         # 5 hand-graded drafts (2 pass, 3 fail); must score 5/5
 pnpm test:termination      # max-revisions enforcement
 pnpm test:integration      # full graph on the MUCHO fixture
 ```
@@ -278,7 +278,7 @@ For a representative trace showing revision 1 failing and revision 2 passing, se
 
 ## A real bug I caught
 
-The first time I ran the agent against the MUCHO fixture, the critic looped four times and ran out of budget. Every revision was missing the same criterion — `has_next_capture_appendix` — and the writer kept producing drafts without the appendix even after the critic flagged it.
+The first time I ran the agent against the MUCHO fixture, the critic looped four times and ran out of budget. Every revision was missing the same criterion (`has_next_capture_appendix`), and the writer kept producing drafts without the appendix even after the critic flagged it.
 
 Reading the LangSmith trace showed the writer was getting the rubric feedback as one big blob of text, and the appendix requirement was buried in the middle. The fix was structuring the feedback as a list of specific criteria the draft had failed, plus the suggestion from the rubric for how to fix each one. After the fix, MUCHO passed on revision 2 with the appendix in place.
 
@@ -290,11 +290,11 @@ Lesson 1 walks through this in detail.
 
 This repo ships v1. Visible roadmap:
 
-- [ ] v1.1 — Multi-language output (Spanish first; MUCHO is in Mexico City).
-- [ ] v1.2 — Auto-publish path that posts to Wanderlearn after operator approval.
-- [ ] v2 — Image generation for the prompts the agent produces.
-- [ ] v2.1 — Audio script timing notes for narrated lessons.
-- [ ] v3 — Multi-agent variant where research + writing + critique are separate specialists with their own retrieval namespaces.
+- [ ] v1.1: Multi-language output (Spanish first; MUCHO is in Mexico City).
+- [ ] v1.2: Auto-publish path that posts to Wanderlearn after operator approval.
+- [ ] v2: Image generation for the prompts the agent produces.
+- [ ] v2.1: Audio script timing notes for narrated lessons.
+- [ ] v3: Multi-agent variant where research + writing + critique are separate specialists with their own retrieval namespaces.
 
 Track progress in [Issues](./issues). PRs not currently accepted; this is a portfolio + course project.
 
@@ -316,7 +316,7 @@ The three repos together cover the three patterns that show up most in productio
 
 ## Why this exists
 
-Wanderlearn is a place-based learning platform I built. Every course is tied to a real location. The bottleneck on course velocity was not the shoot — drones and 360° rigs are cheap and fast now — it was turning raw captures into publishable lessons. Hours of research and drafting per lesson, every time.
+Wanderlearn is a place-based learning platform I built. Every course is tied to a real location. The bottleneck on course velocity was not the shoot (drones and 360° rigs are cheap and fast now); it was turning raw captures into publishable lessons. Hours of research and drafting per lesson, every time.
 
 This agent collapses that work into a 5 to 10 minute first pass. The reflection loop is what makes the first pass good enough to ship after a single operator review. Without the loop, I had a writer with no editor. The loop is the editor.
 

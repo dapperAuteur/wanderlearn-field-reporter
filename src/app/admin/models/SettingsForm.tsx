@@ -168,7 +168,7 @@ export function SettingsForm({
       >
         <strong>{PROVIDER_LABELS[provider]}</strong> is the run-default.{" "}
         {activeCostClass === "paid"
-          ? "Billed per token — operators can still override per run, but the default costs money."
+          ? "Billed per token; operators can still override per run, but the default costs money."
           : "$0 in the normal case (rate-limited free tier or local)."}
       </div>
 

@@ -91,7 +91,7 @@ export default async function FieldReportDetailPage({
           </div>
         ) : (
           <p className="mt-2 text-sm text-slate-500">
-            No final lesson — this run was flagged for review before it passed.
+            No final lesson: this run was flagged for review before it passed.
           </p>
         )}
 

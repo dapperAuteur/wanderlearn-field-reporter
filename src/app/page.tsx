@@ -10,13 +10,13 @@ export default function Home() {
         Wanderlearn Field Reporter
       </h1>
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-        A LangGraph agent that turns a raw Wanderlearn capture — location
-        transcript, GPS, and photo references — into a publishable lesson draft
+        A LangGraph agent that turns a raw Wanderlearn capture (location
+        transcript, GPS, and photo references) into a publishable lesson draft
         through a research, write, and self-critique reflection loop.
       </p>
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
         The agent researches the location, drafts a cited lesson, then critiques
-        it against a rubric and revises until it passes — or escalates to human
+        it against a rubric and revises until it passes, or escalates to human
         review. Browse generated reports and scrub their revision history in the
         operator console.
       </p>

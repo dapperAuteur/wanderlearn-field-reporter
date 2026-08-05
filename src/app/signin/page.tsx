@@ -48,7 +48,7 @@ export default async function SignInPage({
         Sign in to Field Reporter
       </h1>
       <p className="mt-2 mb-6 text-sm leading-relaxed text-muted-foreground">
-        This app is private — only the administrator can sign in. Enter your
+        This app is private; only the administrator can sign in. Enter your
         email; we&apos;ll either send a one-time sign-in link, or invite you to
         the waitlist for when this becomes available.
       </p>

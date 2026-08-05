@@ -46,7 +46,7 @@ export default async function AdminModelsPage() {
       <p className="mt-1 text-sm text-slate-500">
         Pick the model each provider uses, plus the run-default provider that
         prefills the capture form. The capture form&rsquo;s picker can still
-        override the default per run (PRD Appendix A — operator A/B compare).
+        override the default per run (PRD Appendix A, operator A/B compare).
       </p>
       <div className="mt-6 rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
         <SettingsForm
