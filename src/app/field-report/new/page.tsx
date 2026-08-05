@@ -133,7 +133,7 @@ export default function NewCapturePage() {
         </button>
       </div>
       <p className="mt-1 text-sm text-slate-500">
-        Submitting runs the agent end to end — research, write, and the
+        Submitting runs the agent end to end: research, write, and the
         self-critique loop. It can take a few minutes.
       </p>
 
@@ -265,7 +265,7 @@ export default function NewCapturePage() {
               >
                 /admin/models
               </a>
-              . This picker overrides it for this run only (PRD App. A —
+              . This picker overrides it for this run only (PRD App. A,
               operator A/B compare).
             </span>
           </label>

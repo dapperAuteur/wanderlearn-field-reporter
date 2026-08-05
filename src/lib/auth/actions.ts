@@ -75,7 +75,7 @@ export async function requestLoginLink(
     return { status: "link-sent" };
   } catch (err) {
     console.error("[auth] failed to send login link:", err);
-    return { status: "error", message: "Could not send the link — try again." };
+    return { status: "error", message: "Could not send the link. Try again." };
   }
 }
 
@@ -89,7 +89,7 @@ export async function joinWaitlist(
 ): Promise<WaitlistState> {
   const email = normalizeEmail(formData);
   if (!email) {
-    return { status: "error", message: "We lost your email — start over." };
+    return { status: "error", message: "We lost your email. Start over." };
   }
   try {
     await addToWaitlist(email);
@@ -110,7 +110,7 @@ export async function joinWaitlist(
     return { status: "waitlisted" };
   } catch (err) {
     console.error("[waitlist] failed to add signup:", err);
-    return { status: "error", message: "Could not add you — try again." };
+    return { status: "error", message: "Could not add you. Try again." };
   }
 }
 

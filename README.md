@@ -1,7 +1,7 @@
 # Wanderlearn Field Reporter
 
 A [LangGraph](https://langchain-ai.github.io/langgraphjs/) agent that turns a raw
-Wanderlearn capture — a location transcript, GPS, and photo references — into a
+Wanderlearn capture (a location transcript, GPS, and photo references) into a
 publishable lesson draft. The agent researches the location, drafts an
 objectives-first outline, writes a cited lesson, then **self-critiques against a
 rubric and revises** until the draft passes or hits a revision cap.
@@ -12,8 +12,8 @@ Part of the WitUS ecosystem; a sibling of
 **Live:** <https://wanderlearn.field.reporter.witus.online>
 
 **New here?** The in-app [`/help`](src/app/help/page.tsx) page onboards three
-readers — visitors browsing reports, people creating lessons, and operators
-running the app — without needing this README. This README is the deeper
+readers (visitors browsing reports, people creating lessons, and operators
+running the app) without needing this README. This README is the deeper
 engineering reference.
 
 ## The agent
@@ -25,15 +25,15 @@ research → outline → write → critique → ┬ pass     → image prompts
 ```
 
 `critique` scores the draft against the rubric in
-[`src/agent/rubric.ts`](src/agent/rubric.ts) — the single source of truth for
+[`src/agent/rubric.ts`](src/agent/rubric.ts), the single source of truth for
 lesson quality. A failing score loops back to `write`; after `MAX_REVISIONS` (3)
 failed attempts the graph routes to human review instead of looping forever.
 
-`research` gathers material from three tools — Tavily web search (capped at 5
+`research` gathers material from three tools: Tavily web search (capped at 5
 calls per run by a node-level guard), Cloudinary photo metadata, and the
-Wanderlearn course catalog — before the LLM synthesizes the facts.
+Wanderlearn course catalog. Then the LLM synthesizes the facts.
 
-Each run picks its LLM provider — Claude Sonnet 4.6 or Gemini 2.5 Flash — so
+Each run picks its LLM provider (Claude Sonnet 4.6 or Gemini 2.5 Flash) so
 draft quality can be compared side by side.
 
 ## Operator console
@@ -42,7 +42,7 @@ draft quality can be compared side by side.
 then scrub a report's revision history in the side-by-side viewer at
 `/field-report/:id` to see how each critique cycle changed the draft.
 
-The read-only views — the report list and individual lessons — stay public so
+The read-only views (the report list and individual lessons) stay public so
 visitors can browse the agent's work without signing in. The cost-incurring
 paths (the capture form at `/field-report/new` and the `POST
 /api/field-report/generate` endpoint) are single-user: the one address in
@@ -137,7 +137,7 @@ Vitest · Node 20+.
 ```sh
 nvm use                          # Node 20+ (see .nvmrc)
 npm install
-cp .env.example .env.local       # fill in keys — .env.example documents each one
+cp .env.example .env.local       # fill in keys; .env.example documents each one
 npm test                         # offline; the suite mocks the LLM
 npm run dev
 ```
@@ -151,7 +151,7 @@ optional and its tool fails soft when absent.
 |---|---|
 | `npm run dev` | Next.js dev server |
 | `npm run build` | Production build |
-| `npm run typecheck` | `tsc --noEmit` — strict, no `any` |
+| `npm run typecheck` | `tsc --noEmit` (strict, no `any`) |
 | `npm run lint` | ESLint |
 | `npm test` | Vitest run |
 | `npm run db:generate` | Generate the Drizzle migration from `src/db/schema.ts` |
@@ -170,15 +170,15 @@ src/
     nodes/        research · outline · write · critique ·
                   generateImagePrompts · flagForHumanReview
     tools/        webSearch · cloudinaryMetadata · existingWanderlearnCourses
-  db/schema.ts    Drizzle schema — field_reports, field_report_revisions
+  db/schema.ts    Drizzle schema: field_reports, field_report_revisions
   lib/            env access, report queries, LangSmith + Cloudinary helpers
-  app/            Next.js app router — operator console + API routes
+  app/            Next.js app router: operator console + API routes
 tests/            Vitest suites; the LLM is mocked, so the suite runs offline
 ```
 
 ## Curriculum
 
-Four code-along lessons on the LangGraph patterns behind this agent — each
+Four code-along lessons on the LangGraph patterns behind this agent, each
 taught on a different sample domain so the patterns transfer:
 
 1. [Reflection loops](docs/lessons/01-reflection-loops.md)
@@ -195,4 +195,4 @@ Stack DSN (see `plans/user-tasks/12-betterstack-error-monitoring-dsn.md`).
 
 ## License
 
-Private — © B4C LLC. An AwesomeWebStore.com brand.
+Private. © B4C LLC. An AwesomeWebStore.com brand.

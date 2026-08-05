@@ -63,7 +63,7 @@ export function RevisionViewer({
       <div className="mt-4 grid gap-6 lg:grid-cols-2">
         <section aria-label={`Revision ${revision.revisionNumber} draft`}>
           <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            Revision {revision.revisionNumber} — draft
+            Revision {revision.revisionNumber}: draft
           </h3>
           <div className="mt-2 max-h-112 overflow-auto rounded-md border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
             <Markdown>{revision.markdown}</Markdown>

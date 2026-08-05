@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Help & onboarding · Wanderlearn Field Reporter",
   description:
-    "How to use the Wanderlearn Field Reporter — for visitors browsing reports, " +
+    "How to use the Wanderlearn Field Reporter: for visitors browsing reports, " +
     "for operators running the agent, and for anyone running the app.",
 };
 
@@ -25,8 +25,8 @@ export default function HelpPage() {
         Help &amp; onboarding
       </h1>
       <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-        The Field Reporter is an agent that turns a raw capture — a location
-        transcript, GPS, and photo references — into a publishable lesson draft.
+        The Field Reporter is an agent that turns a raw capture (a location
+        transcript, GPS, and photo references) into a publishable lesson draft.
         It researches the place, writes a cited draft, then critiques its own
         draft against a quality checklist and revises until the draft passes or it
         asks a human to take over. This page explains how to use it, whichever of
@@ -65,7 +65,7 @@ export default function HelpPage() {
           1. Browsing reports (no account needed)
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          The report views are public — you do not sign in to read them. Start at{" "}
+          The report views are public; you do not sign in to read them. Start at{" "}
           <Link className="text-sky-700 hover:underline dark:text-sky-400" href="/field-report">
             the report list
           </Link>{" "}
@@ -73,17 +73,17 @@ export default function HelpPage() {
         </p>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Read the final lesson</span> —
+            <span className="font-medium text-slate-800 dark:text-slate-200">Read the final lesson</span>:
             the published draft, rendered with its citations.
           </li>
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Scrub the revisions</span> —
+            <span className="font-medium text-slate-800 dark:text-slate-200">Scrub the revisions</span>:
             the side-by-side viewer shows each draft the agent wrote and how the
             critique changed it. This is the reflection loop made visible: watch a
             weak first draft become a strong final one.
           </li>
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Open the trace</span> —
+            <span className="font-medium text-slate-800 dark:text-slate-200">Open the trace</span>:
             when a report links to its LangSmith trace, you can see every step the
             agent took to produce it.
           </li>
@@ -98,7 +98,7 @@ export default function HelpPage() {
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           Creating lessons is the cost-incurring part, so it requires signing in.
           Today the app is single-user: only the configured admin address can sign
-          in (a magic link is emailed — no password). If you are not the admin, the
+          in (a magic link is emailed, no password). If you are not the admin, the
           sign-in screen offers a <span className="font-medium text-slate-800 dark:text-slate-200">waitlist</span> instead,
           for when this becomes a product you can use.
         </p>
@@ -112,14 +112,14 @@ export default function HelpPage() {
             which model writes the draft.
           </li>
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Generate</span> — the
+            <span className="font-medium text-slate-800 dark:text-slate-200">Generate</span>: the
             agent researches the location, drafts an objectives-first lesson,
             critiques it against the rubric, and revises until it passes (or
             escalates to human review after a few tries). This runs synchronously;
             give it a moment.
           </li>
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Review</span> — open the
+            <span className="font-medium text-slate-800 dark:text-slate-200">Review</span>: open the
             new report and use the revision viewer to see how each critique cycle
             improved the draft. If the agent escalated, the report is flagged for
             your review rather than published blindly.
@@ -142,7 +142,7 @@ export default function HelpPage() {
         </p>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Local run</span> —{" "}
+            <span className="font-medium text-slate-800 dark:text-slate-200">Local run</span>:{" "}
             <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-slate-800">npm install</code>,
             copy <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-slate-800">.env.example</code>{" "}
             to <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-slate-800">.env.local</code>,
@@ -150,15 +150,15 @@ export default function HelpPage() {
             No Docker is required.
           </li>
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Keys</span> — the agent
+            <span className="font-medium text-slate-800 dark:text-slate-200">Keys</span>: the agent
             needs one model key (<code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-slate-800">ANTHROPIC_API_KEY</code> or{" "}
             <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-slate-800">GOOGLE_API_KEY</code>).
-            Every other key is optional — its feature fails soft when the key is
+            Every other key is optional; its feature fails soft when the key is
             absent. Each variable is documented in{" "}
             <code className="rounded bg-slate-100 px-1 py-0.5 text-xs dark:bg-slate-800">.env.example</code>.
           </li>
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Admin console</span> — at{" "}
+            <span className="font-medium text-slate-800 dark:text-slate-200">Admin console</span>: at{" "}
             <Link className="text-sky-700 hover:underline dark:text-sky-400" href="/admin">
               /admin
             </Link>{" "}
@@ -166,12 +166,12 @@ export default function HelpPage() {
             default provider and per-provider models.
           </li>
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Tracing</span> — set the
+            <span className="font-medium text-slate-800 dark:text-slate-200">Tracing</span>: set the
             LangSmith variables to send run traces to a dashboard. The app runs
             fine without them.
           </li>
           <li>
-            <span className="font-medium text-slate-800 dark:text-slate-200">Sign-in delivery</span> —
+            <span className="font-medium text-slate-800 dark:text-slate-200">Sign-in delivery</span>:
             the magic link is sent through Mailgun; the admin address and mail keys
             live in the environment.
           </li>
@@ -192,7 +192,7 @@ export default function HelpPage() {
           <div>
             <dt className="font-medium text-slate-800 dark:text-slate-200">Why can&apos;t I sign in?</dt>
             <dd className="mt-1">
-              The app is single-user for now — only the admin address is allowed.
+              The app is single-user for now; only the admin address is allowed.
               Join the waitlist from the sign-in screen and you&apos;ll be first in
               line when access opens up.
             </dd>
@@ -205,7 +205,7 @@ export default function HelpPage() {
             <dt className="font-medium text-slate-800 dark:text-slate-200">What is the revision viewer showing me?</dt>
             <dd className="mt-1">
               Each pass of the agent&apos;s write-then-critique loop. Reading down
-              the revisions shows the draft improving toward the rubric — or, if it
+              the revisions shows the draft improving toward the rubric or, if it
               never passes, why it was sent to human review.
             </dd>
           </div>
