@@ -8,14 +8,20 @@
 // WitUS login grants exactly the same access as a magic link and nothing more.
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
+import {
+  DEFAULT_WITUS_AUTHORIZE_URL,
+  withAttemptMarker,
+  witusRedirectUri,
+} from "@/lib/witus-sso";
 
 // Touches node:crypto and sets cookies; must never be cached.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// The default lives in src/lib/witus-sso.ts because the silent-SSO probe and the global
+// sign-out URL are both DERIVED from it — one statement of where the IdP is, not three.
 const AUTHORIZE_URL =
-  process.env.WITUS_OIDC_AUTHORIZE_URL ??
-  "https://accounts.witus.online/api/idp/oauth2/authorize";
+  process.env.WITUS_OIDC_AUTHORIZE_URL ?? DEFAULT_WITUS_AUTHORIZE_URL;
 
 const b64url = (buf: Buffer) => buf.toString("base64url");
 
@@ -23,7 +29,12 @@ export async function GET(request: NextRequest) {
   const clientId = process.env.WITUS_OIDC_CLIENT_ID;
   if (!clientId) {
     return NextResponse.redirect(
-      new URL("/signin?error=witus_not_configured", request.url),
+      // The `?sso=tried` marker is the half of the "Continue as ..." loop guard that survives a
+      // browser with no usable sessionStorage — see src/lib/witus-sso.ts.
+      new URL(
+        withAttemptMarker("/signin?error=witus_not_configured"),
+        request.url,
+      ),
     );
   }
 
@@ -31,7 +42,7 @@ export async function GET(request: NextRequest) {
   // Prefer the configured site URL over the request origin (which on Vercel may
   // be the deployment host, not the canonical domain).
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? request.nextUrl.origin;
-  const redirectUri = `${siteUrl.replace(/\/$/, "")}/api/auth/witus/callback`;
+  const redirectUri = witusRedirectUri(siteUrl);
 
   const state = b64url(crypto.randomBytes(16));
   const verifier = b64url(crypto.randomBytes(32));

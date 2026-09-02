@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { getEnv } from "@/lib/env";
+import { WitusSsoButton } from "@/components/witus-sso-button";
+import { witusSilentSsoEndpoint } from "@/lib/witus-sso-config";
 import { SignInForm } from "./SignInForm";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +40,11 @@ export default async function SignInPage({
 
   // The "Sign in with WitUS" button only appears once the app has OIDC creds.
   const witusEnabled = Boolean(getEnv().WITUS_OIDC_CLIENT_ID);
+  // Where that button's silent "Continue as <name>" check asks the IdP who this browser is.
+  // Resolved on the SERVER and null unless the app is a configured OIDC client, so the client
+  // component never touches the raw env and the probe stays dark when there is nothing to sign
+  // in to. See src/lib/witus-sso.ts for the whole design.
+  const silentCheckUrl = witusSilentSsoEndpoint();
 
   return (
     <main className="mx-auto flex max-w-md flex-col px-6 py-24">
@@ -55,12 +62,7 @@ export default async function SignInPage({
 
       {witusEnabled && (
         <div className="mb-6">
-          <a
-            href="/api/auth/witus/authorize"
-            className="flex w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
-          >
-            Sign in with WitUS
-          </a>
+          <WitusSsoButton silentCheckUrl={silentCheckUrl} />
           <div className="mt-4 flex items-center gap-3">
             <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
             <span className="text-xs uppercase tracking-wide text-slate-400">

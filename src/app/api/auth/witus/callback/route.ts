@@ -14,6 +14,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getEnv } from "@/lib/env";
 import { startSession } from "@/lib/auth/dal";
+import { withAttemptMarker, witusRedirectUri } from "@/lib/witus-sso";
 
 // Touches the session helper (node:crypto via jose) and sets cookies; never cache.
 export const runtime = "nodejs";
@@ -51,8 +52,12 @@ export async function GET(request: NextRequest) {
   };
   const fail = (reason: string) => {
     clearTransient();
+    // `?sso=tried` is the half of the "Continue as <name>" loop guard that does not depend on
+    // sessionStorage. Every path out of this handler is a WitUS attempt that did not finish, and
+    // without the marker a stale IdP session would offer "Continue as X" again on the page we are
+    // redirecting to, forever. See src/lib/witus-sso.ts.
     return NextResponse.redirect(
-      new URL(`/signin?error=${reason}`, request.url),
+      new URL(withAttemptMarker(`/signin?error=${reason}`), request.url),
     );
   };
 
@@ -61,7 +66,7 @@ export async function GET(request: NextRequest) {
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? url.origin;
-  const redirectUri = `${siteUrl.replace(/\/$/, "")}/api/auth/witus/callback`;
+  const redirectUri = witusRedirectUri(siteUrl);
 
   // 1. Exchange the authorization code for tokens.
   const tokenRes = await fetch(TOKEN_URL, {

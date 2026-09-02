@@ -55,6 +55,31 @@ Non-admins who reach the sign-in screen can join a waitlist instead of being
 turned away; signups are reviewed in the `/admin` dashboard and forwarded to
 WitUS Inbox. A persistent global navigation header ties the console together.
 
+### Sign in with WitUS (ecosystem SSO)
+
+When `WITUS_OIDC_CLIENT_ID` is set, `/signin` also offers **Sign in with WitUS** —
+an OIDC authorization-code + PKCE flow against `accounts.witus.online`
+([`src/app/api/auth/witus/`](src/app/api/auth/witus/)) that ends by minting the
+*same* `wlfr_session` cookie the magic link does, behind the *same* `ADMIN_EMAIL`
+gate. SSO widens nothing. Two behaviours ride on it, both dark without that env
+var (see [`src/lib/witus-sso.ts`](src/lib/witus-sso.ts)):
+
+- **"Continue as \<name\>".** The page renders exactly as it does today and, in
+  parallel, asks the IdP over CORS whether this browser already has a WitUS
+  session. If it does, the button relabels. A blocked, failed, or slow probe is
+  completely invisible — and it *is* blocked on Safari and Firefox, whose
+  third-party-cookie rules are working as intended. The name is display copy that
+  crossed an origin boundary; it never authenticates anyone, and the click still
+  runs the real code flow.
+- **Global sign-out.** The nav button reads **"Sign out of WitUS"** and ends the
+  shared IdP session too, so signing out here signs you out of every WitUS app.
+  The local session is destroyed *first* and the hand-off to the IdP happens
+  second, so an unreachable IdP still leaves you signed out here.
+
+Both depend on `NEXT_PUBLIC_SITE_URL` exactly matching the origin the WitUS IdP
+has registered for this client; a mismatch fails closed. See
+`plans/user-tasks/14-confirm-site-origin-for-witus-sso.md`.
+
 ## Error monitoring
 
 Crash reporting goes to [Better Stack](https://betterstack.com), which ingests
