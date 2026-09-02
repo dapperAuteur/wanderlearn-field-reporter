@@ -116,8 +116,21 @@ export async function joinWaitlist(
 
 /** Clear the session and return to the sign-in screen. */
 export async function signOut(): Promise<void> {
+  await signOutLocal();
+  redirect("/signin");
+}
+
+/**
+ * Clear the session and stop — no redirect.
+ *
+ * The global-sign-out half of `SignOutButton` needs the local session destroyed as a completed
+ * round-trip it can await, because what happens next is a full navigation to the WitUS IdP's
+ * end-session endpoint. ORDER IS THE SAFETY PROPERTY: local first, hand-off second, so an IdP that
+ * is unreachable or refuses still leaves the person signed out HERE. `signOut` above is this plus
+ * the redirect, and remains the no-JavaScript path.
+ */
+export async function signOutLocal(): Promise<void> {
   await endSession();
   // Drop the root layout's cache so the sticky nav re-renders signed-out.
   revalidatePath("/", "layout");
-  redirect("/signin");
 }
