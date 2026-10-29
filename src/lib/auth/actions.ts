@@ -123,11 +123,12 @@ export async function signOut(): Promise<void> {
 /**
  * Clear the session and stop — no redirect.
  *
- * The global-sign-out half of `SignOutButton` needs the local session destroyed as a completed
- * round-trip it can await, because what happens next is a full navigation to the WitUS IdP's
- * end-session endpoint. ORDER IS THE SAFETY PROPERTY: local first, hand-off second, so an IdP that
- * is unreachable or refuses still leaves the person signed out HERE. `signOut` above is this plus
- * the redirect, and remains the no-JavaScript path.
+ * "Sign out of WitUS everywhere" (`SignOutEverywhereButton`) needs the local session destroyed
+ * as a completed round-trip it can await, because what happens next is a full navigation to the
+ * WitUS IdP's end-session endpoint. ORDER IS THE SAFETY PROPERTY: local first, hand-off second,
+ * so an IdP that is unreachable or refuses still leaves the person signed out HERE. `signOut`
+ * above is this plus the redirect: the plain "Sign out", this app only, with no JavaScript on the
+ * path (BAM, 2026-10-29, witus task 128 option (b)).
  */
 export async function signOutLocal(): Promise<void> {
   await endSession();

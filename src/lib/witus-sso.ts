@@ -1,5 +1,5 @@
 /**
- * Ecosystem SSO helpers — "Continue as <name>" and global sign-out.
+ * Ecosystem SSO helpers — "Continue as <name>" and "Sign out of WitUS everywhere".
  *
  * TWO FEATURES, ONE FILE OF PURE FUNCTIONS.
  *
@@ -9,9 +9,11 @@
  *     today, and in parallel the browser asks the IdP "who is this?". If an answer arrives, the
  *     existing "Sign in with WitUS" button relabels to "Continue as <name>". Nothing waits on it.
  *
- *  2. GLOBAL SIGN-OUT. Signing out here also ends the shared session at the IdP, so signing out of
- *     one WitUS app signs you out of all of them. Without it, "Continue as <name>" would offer to
- *     sign you straight back in the moment you signed out, which reads as a broken logout.
+ *  2. "SIGN OUT" vs. "SIGN OUT OF WITUS EVERYWHERE" (BAM, 2026-10-29, witus task 128 option (b),
+ *     replacing the earlier global sign-out). "Sign out" ends only this app's session, so the
+ *     WitUS session stays and "Continue as <name>" offering to sign you straight back in is the
+ *     intended behaviour. A separate "Sign out of WitUS everywhere" also ends the shared session
+ *     at the IdP; other WitUS apps keep their own sessions until the person signs out of them.
  *
  * WHY A CORS FETCH AND NOT OIDC `prompt=none`. `prompt=none` is a NAVIGATION — you leave the page
  * to ask — which is the fully-automatic design BAM rejected, and the only way to ask without
@@ -147,7 +149,8 @@ export function witusRedirectUri(siteUrl: string): string {
 }
 
 /**
- * The `post_logout_redirect_uri` the IdP sends the visitor back to after a global sign-out.
+ * The `post_logout_redirect_uri` the IdP sends the visitor back to after "Sign out of WitUS
+ * everywhere".
  *
  * THE TRAILING SLASH IS REQUIRED. better-auth exact-matches this against the client's registered
  * `redirectUrls`, and the IdP registry (gemini/witus lib/identity/clients.ts) registers
@@ -251,4 +254,36 @@ function cleanLabel(value: unknown): string | null {
 /** Button copy. Kept here so the test pins the exact string the visitor reads. */
 export function continueAsLabel(identity: SsoIdentity | null): string {
   return identity ? `Continue as ${identity.label}` : "Sign in with WitUS";
+}
+
+/**
+ * Sign-out copy, in one place (BAM, 2026-10-29, witus task 128 option (b)). "Sign out" never flips
+ * to a global label (shared UI rule: the header Sign in / Sign out control is never renamed).
+ */
+export const SIGN_OUT_LABEL = "Sign out";
+export const SIGN_OUT_EVERYWHERE_LABEL = "Sign out of WitUS everywhere";
+export const SIGN_OUT_EVERYWHERE_HELP =
+  "Also signs you out of WitUS. Other WitUS apps you are signed in to stay signed in until you sign out of them.";
+
+/**
+ * What "Sign out of WitUS everywhere" does, with the browser pieces passed in so the order can be
+ * tested without a DOM.
+ *
+ * ORDER IS THE SAFETY PROPERTY: the LOCAL session is destroyed and AWAITED first, so if the IdP is
+ * unreachable, refuses the request, or the redirect never completes, the person is still signed out
+ * HERE. Handing off first would turn any IdP failure into "I clicked sign out and I am still signed
+ * in". An error from the local step is swallowed so the WitUS sign-out the person asked for still
+ * happens; "Sign out" stays available if the local step failed.
+ */
+export async function signOutEverywhere(deps: {
+  signOutLocal: () => Promise<unknown>;
+  navigate: (url: string) => void;
+  endSessionUrl: string;
+}): Promise<void> {
+  try {
+    await deps.signOutLocal();
+  } catch {
+    // Swallowed on purpose: see above. The handoff below must still happen.
+  }
+  deps.navigate(deps.endSessionUrl);
 }

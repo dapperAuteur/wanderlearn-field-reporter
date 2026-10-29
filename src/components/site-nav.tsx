@@ -13,9 +13,10 @@ import { witusEndSessionUrl } from "@/lib/witus-sso-config";
  * so the layout renders dynamically — `signOut` calls `revalidatePath` to keep
  * this in sync after a sign-out.
  *
- * Sign-out is GLOBAL when this app is a configured WitUS OIDC client: the end-session URL is
- * resolved here, on the server (the button is a client component and must not read the raw env),
- * and is null otherwise, which leaves sign-out purely local. See src/lib/witus-sso-config.ts.
+ * "Sign out" ends only this app's session. When this app is a configured WitUS OIDC client, a
+ * second "Sign out of WitUS everywhere" renders beside it (BAM, 2026-10-29, witus task 128 option
+ * (b)): its end-session URL is resolved here, on the server (the button is a client component and
+ * must not read the raw env), and is null otherwise. See src/lib/witus-sso-config.ts.
  */
 export async function SiteNav() {
   const currentUser = await getCurrentUser();

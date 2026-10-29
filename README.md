@@ -71,9 +71,12 @@ var (see [`src/lib/witus-sso.ts`](src/lib/witus-sso.ts)):
   third-party-cookie rules are working as intended. The name is display copy that
   crossed an origin boundary; it never authenticates anyone, and the click still
   runs the real code flow.
-- **Global sign-out.** The nav button reads **"Sign out of WitUS"** and ends the
-  shared IdP session too, so signing out here signs you out of every WitUS app.
-  The local session is destroyed *first* and the hand-off to the IdP happens
+- **Sign out vs. Sign out of WitUS everywhere** (BAM, 2026-10-29, witus task 128
+  option (b)). **Sign out** in the nav ends only this app's session and goes to
+  `/signin`; you stay signed in to WitUS. When SSO is configured, **Sign out of
+  WitUS everywhere** sits beside it with the help text "Also signs you out of
+  WitUS. Other WitUS apps you are signed in to stay signed in until you sign out
+  of them." It destroys the local session *first* and hands off to the IdP
   second, so an unreachable IdP still leaves you signed out here.
 
 Both depend on `NEXT_PUBLIC_SITE_URL` exactly matching the origin the WitUS IdP
