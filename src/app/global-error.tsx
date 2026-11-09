@@ -44,6 +44,12 @@ export default function GlobalError({
             The field reporter could not load this page. Trying again usually works; if it does not,
             the report you were viewing is still safe.
           </p>
+          {/* The root layout and its header failed, so this minimal shell carries its own links. */}
+          <p style={{ margin: "12px 0", fontSize: 14 }}>
+            <a href="/signin" style={{ color: "inherit" }}>
+              Sign in
+            </a>
+          </p>
           <div
             style={{
               marginTop: 20,
